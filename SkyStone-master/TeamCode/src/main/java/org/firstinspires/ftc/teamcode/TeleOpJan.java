@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import java.util.concurrent.TimeUnit;
 
-@TeleOp(name="Second Robot Mecanum Drive", group="!TeleOp")
+@TeleOp(name="Jan Competition", group="!TeleOp")
 public class TeleOpJan extends OpMode {
 
     // variables
@@ -27,6 +27,7 @@ public class TeleOpJan extends OpMode {
         telemetry.addData("status: ", "Ready!");
         Robot.liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         Robot.liftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        Robot.liftMotor.setZeroPowerBehavior( DcMotor.ZeroPowerBehavior.BRAKE);
     }
 
     @Override
@@ -38,6 +39,7 @@ public class TeleOpJan extends OpMode {
         deltaTime = runtime.now(TimeUnit.MILLISECONDS) - lastTime;
         lastTime = runtime.now(TimeUnit.MILLISECONDS);
 
+        ////////////  RUNNNER //////////////////////////
         // set joystick variables
         lh = gamepad1.left_stick_x;
         lv = -gamepad1.left_stick_y;
@@ -68,7 +70,8 @@ public class TeleOpJan extends OpMode {
         }
 
 
-        // set gripper location
+        /////////////////  GUNNER ////////////////////////
+        //  Gripper
         if (gamepad2.right_bumper){
             Robot.mainGripperLeft.setPosition(1);
             Robot.mainGripperRight.setPosition(.25);
@@ -81,14 +84,29 @@ public class TeleOpJan extends OpMode {
 
         }
 
-        if (Robot.limitSwitch.isPressed() && !gamepad2.x) {
+        // Lift Control- Joystick.
+        // Lift up => negative values of encoder.
+        // Negative power => ift up.
+        // Gamepad X functions as an override limit.
+        if (Robot.limitSwitch.isPressed() ) {
+            // Limit switch is pressed, so may only go up.
             Robot.liftMotor.setPower(Math.min(0,gamepad2.left_stick_y));
-        } else if (Robot.liftMotor.getCurrentPosition() <= -4650 && !gamepad2.x) {
+        } else if (Robot.liftMotor.getCurrentPosition() <= -4650 ) {
+            // Hit endocder limit.  So, may only go down.
             Robot.liftMotor.setPower(Math.max(0,gamepad2.left_stick_y));
         } else {
-            Robot.liftMotor.setPower(gamepad2.left_stick_y);
+            // Normal operation.  Not hitting any limit.
+            // Set the power according to where it is.
+            if (Robot.liftMotor.getCurrentPosition() < 1000 ) {
+                // Normal operation limit motor to 60%.  Don't break the hardware.
+                Robot.liftMotor.setPower(gamepad2.left_stick_y * 0.7);
+            } else {
+                // Near zero slow down.
+                Robot.liftMotor.setPower(gamepad2.left_stick_y * 0.2);
+            }
         }
 
+        // Lift Control- B button: Descend and reset zero. is decsencd and reeset zero.
         if (gamepad2.b) {
             if (Robot.limitSwitch.isPressed()){
                 Robot.liftMotor.setPower(0);
@@ -100,6 +118,7 @@ public class TeleOpJan extends OpMode {
         }
 
         telemetry.addData("lift enc", Robot.liftMotor.getCurrentPosition());
+        telemetry.addData("Lift",Robot.liftMotor.getPower());
         telemetry.addData("fr",Robot.frontRight.getCurrentPosition());
         telemetry.addData("fl",Robot.frontLeft.getCurrentPosition());
         telemetry.addData("br",Robot.backRight.getCurrentPosition());
