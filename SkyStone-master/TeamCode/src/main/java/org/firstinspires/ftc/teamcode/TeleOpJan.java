@@ -40,6 +40,12 @@ public class TeleOpJan extends OpMode {
         lastTime = runtime.now(TimeUnit.MILLISECONDS);
 
         ////////////  RUNNNER //////////////////////////
+        if (gamepad1.left_bumper) {
+            isLowGear = true;
+        } else if (gamepad1.right_bumper) {
+            isLowGear = false;
+        }
+
         // set joystick variables
         lh = gamepad1.left_stick_x;
         lv = -gamepad1.left_stick_y;
@@ -69,19 +75,24 @@ public class TeleOpJan extends OpMode {
             Robot.backLeft.setPower(bl);
         }
 
+        // set position of foundation manipulator
+        if (gamepad1.left_trigger > .5) {
+            Robot.foundationGripper.setPosition(0.7);
+        } else if (gamepad1.right_trigger > .5) {
+            Robot.foundationGripper.setPosition(0.9);
+        }
 
         /////////////////  GUNNER ////////////////////////
-        //  Gripper
+        //  Open the gripper
         if (gamepad2.right_bumper){
-            Robot.mainGripperLeft.setPosition(1);
+            Robot.mainGripperLeft.setPosition(0.8);
             Robot.mainGripperRight.setPosition(.25);
 
         }
-
-        if (gamepad2.left_bumper){
+        // Close the gripper
+        if (gamepad2.right_trigger > 0.5 ){
             Robot.mainGripperLeft.setPosition(.25);
             Robot.mainGripperRight.setPosition(1);
-
         }
 
         // Lift Control- Joystick.
@@ -98,7 +109,7 @@ public class TeleOpJan extends OpMode {
             // Normal operation.  Not hitting any limit.
             // Set the power according to where it is.
             if (Robot.liftMotor.getCurrentPosition() < 1000 ) {
-                // Normal operation limit motor to 60%.  Don't break the hardware.
+                // Normal operation limit motor to 70%.  Don't break the hardware!
                 Robot.liftMotor.setPower(gamepad2.left_stick_y * 0.7);
             } else {
                 // Near zero slow down.
@@ -113,8 +124,15 @@ public class TeleOpJan extends OpMode {
                 Robot.liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                 Robot.liftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             } else {
-                Robot.liftMotor.setPower(.5);
+                Robot.liftMotor.setPower(.2);
             }
+        }
+
+        // Capstone.  Left Trigger Deploys, Bumper resets
+        if (gamepad2.left_trigger > .5) {
+            Robot.capstoneGripper.setPosition(1);
+        } else if (gamepad2.left_bumper) {
+            Robot.capstoneGripper.setPosition(0.5);
         }
 
         telemetry.addData("lift enc", Robot.liftMotor.getCurrentPosition());
@@ -126,34 +144,8 @@ public class TeleOpJan extends OpMode {
         telemetry.addData("touch",Robot.limitSwitch.isPressed());
         telemetry.update();
 
-        if (gamepad2.dpad_up) {
-            Robot.leftGripper.setPosition(0);
-        } else if (gamepad2.dpad_down) {
-            Robot.leftGripper.setPosition(1);
-        }
-        if (gamepad2.a) {
-            Robot.rightGripper.setPosition(1);
-        } else if (gamepad2.y) {
-            Robot.rightGripper.setPosition(0);
-        }
 
-        // set position of foundation manipulator
-        if (gamepad1.left_trigger > .5) {
-            Robot.foundationGripper.setPosition(0.7);
-        } else if (gamepad1.right_trigger > .5) {
-            Robot.foundationGripper.setPosition(0.9);
-        }
-        if (gamepad1.left_bumper) {
-            isLowGear = true;
-        } else if (gamepad1.right_bumper) {
-            isLowGear = false;
-        }
 
-        if (gamepad2.left_trigger > .5) {
-            Robot.capstoneGripper.setPosition(0);
-        } else if (gamepad2.right_trigger > .5) {
-            Robot.capstoneGripper.setPosition(1);
-        }
     }
 
     @Override

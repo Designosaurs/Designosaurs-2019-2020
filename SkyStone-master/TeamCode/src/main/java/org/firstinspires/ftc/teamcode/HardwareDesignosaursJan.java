@@ -185,7 +185,7 @@ public class HardwareDesignosaursJan {
         liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         // Set Servo Positions
-        mainGripperLeft.setPosition(1);
+        mainGripperLeft.setPosition(0.8);  // Open
         mainGripperRight.setPosition(.25);
         foundationGripper.setPosition(0.7);
         leftGripper.setPosition(0);
