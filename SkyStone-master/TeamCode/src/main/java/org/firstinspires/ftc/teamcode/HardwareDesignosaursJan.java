@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -33,8 +34,11 @@ public class HardwareDesignosaursJan {
     public Servo mainGripperRight   = null;
 
     // Define Sensors
-    public DistanceSensor distance  = null;
     public TouchSensor limitSwitch  = null;
+    public ColorSensor sensorColor  = null;
+    public DistanceSensor sensorDistance  = null;  // This is the one built into the color sensor.  Not accurate.
+    public DistanceSensor sensorRange = null;      // The 2 Meter, accurate sensor.
+
     //    public BNO055IMU imu = null;
 //    Orientation angles = null;
 //    Acceleration gravity;
@@ -76,63 +80,6 @@ public class HardwareDesignosaursJan {
     public HardwareDesignosaursJan() {
 
     }
-  
-    public void init(HardwareMap ahwMap, int xPos, int yPos, int thetaPos) {
-        hwMap = ahwMap;
-
-        // Initialize Motors
-        frontRight = hwMap.get(DcMotor.class,"front_right");
-        frontLeft = hwMap.get(DcMotor.class,"front_left");
-        backRight = hwMap.get(DcMotor.class,"back_right");
-        backLeft = hwMap.get(DcMotor.class,"back_left");
-        pitchMotor = hwMap.get(DcMotor.class, "pitch_motor");
-        liftMotor = hwMap.get(DcMotor.class, "lift_motor");
-
-        // Initialize Servos
-        mainGripper = hwMap.get(Servo.class, "main_manipulator");
-        foundationGripper = hwMap.get(Servo.class, "foundation_manipulator");
-        leftGripper = hwMap.get(Servo.class, "left_auto_manipulator");
-        rightGripper = hwMap.get(Servo.class, "right_auto_manipulator");
-        capstoneGripper = hwMap.get(Servo.class, "capstone_manipulator");
-
-
-        // Initialize Sensors
-        distance = hwMap.get(DistanceSensor.class,"sensor_distance_left");
-
-//        imu = hwMap.get(BNO055IMU.class,"imu");
-
-
-        // Set Motor Directions
-        frontRight.setDirection(DcMotor.Direction.REVERSE);
-        frontLeft.setDirection(DcMotor.Direction.FORWARD);
-        backRight.setDirection(DcMotor.Direction.REVERSE);
-        backLeft.setDirection(DcMotor.Direction.FORWARD);
-
-        // Stop Motors
-        frontRight.setPower(0);
-        frontLeft.setPower(0);
-        backRight.setPower(0);
-        backLeft.setPower(0);
-        pitchMotor.setPower(0.7);
-        pitchMotor.setTargetPosition(0);
-
-        // Enable All Encoders
-        frontRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        frontLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        backRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        backLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        pitchMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-        // Set Servo Positions
-
-        mainGripper.setPosition(1);
-        foundationGripper.setPosition(0.7);
-        leftGripper.setPosition(0);
-        rightGripper.setPosition(1);
-        capstoneGripper.setPosition(0);
-
-    }
 
 
     public void init(HardwareMap ahwMap) {
@@ -157,11 +104,22 @@ public class HardwareDesignosaursJan {
         capstoneGripper = hwMap.get(Servo.class, "capstone_manipulator");
 
         // Initialize Sensors
-        distance = hwMap.get(DistanceSensor.class,"sensor_range");
+        sensorRange = hwMap.get(DistanceSensor.class,"sensor_range");
         try {
             limitSwitch = hwMap.get(TouchSensor.class,"touch_sensor");
 
         } catch (Exception e) {}
+
+
+        // get a reference to the color sensor.
+        sensorColor = hwMap.get(ColorSensor.class, "sensor_color_distance");
+
+        // get a reference to the distance sensor that shares the same name.
+        // 'distance' here is very short range, and no calibration at all.
+        sensorDistance = hwMap.get(DistanceSensor.class, "sensor_color_distance");
+
+
+
 
         // Set Motor Directions
         frontRight.setDirection(DcMotor.Direction.REVERSE);
@@ -197,33 +155,6 @@ public class HardwareDesignosaursJan {
         init2(hwMap);
     }
 
-    public void initDrive(HardwareMap hwmap) {
-
-    }
-
-    // Functions
-
-    public double square(double base, int power) { //function that does fractional squaring
-        if (base == 0) {
-            return 0;
-        } else {
-            double basen, based;
-            basen = base; // numerator
-            based = base; // denominator
-
-            // Multiplies numerator
-            for (int i = 0; i < (power+16); i++) {
-                basen *= base;
-            }
-
-            // Multiplies denominator
-            for (int i = 0; i < 16; i++) {
-                based *= base;
-            }
-            return basen/based;
-
-        }
-    }
 
     public void setTargetPos (DcMotor motor, double position) {
         // this function sets the specified motor to go to the specified position
@@ -358,9 +289,9 @@ public class HardwareDesignosaursJan {
         moveDirection(north,west,rotate,this);
     }
 
-    double getDistance() {
-        return distance.getDistance(DistanceUnit.INCH);
-    }
+    //double getDistance() {
+     //   return sensorRange.getDistance(DistanceUnit.INCH);
+    //}
 
     void wait(double seconds, LinearOpMode opMode, ElapsedTime time) {
         double startTime = time.now(TimeUnit.MILLISECONDS);
@@ -435,5 +366,88 @@ public class HardwareDesignosaursJan {
     double limit (double input, double max) {
         return limit(input,max,-max);
     }
+
+    // Match Functions
+
+    public double square(double base, int power) { //function that does fractional squaring
+        if (base == 0) {
+            return 0;
+        } else {
+            double basen, based;
+            basen = base; // numerator
+            based = base; // denominator
+
+            // Multiplies numerator
+            for (int i = 0; i < (power+16); i++) {
+                basen *= base;
+            }
+
+            // Multiplies denominator
+            for (int i = 0; i < 16; i++) {
+                based *= base;
+            }
+            return basen/based;
+
+        }
+    }
+
+    public void init(HardwareMap ahwMap, int xPos, int yPos, int thetaPos) {
+        hwMap = ahwMap;
+
+        // Initialize Motors
+        frontRight = hwMap.get(DcMotor.class,"front_right");
+        frontLeft = hwMap.get(DcMotor.class,"front_left");
+        backRight = hwMap.get(DcMotor.class,"back_right");
+        backLeft = hwMap.get(DcMotor.class,"back_left");
+        pitchMotor = hwMap.get(DcMotor.class, "pitch_motor");
+        liftMotor = hwMap.get(DcMotor.class, "lift_motor");
+
+        // Initialize Servos
+        mainGripper = hwMap.get(Servo.class, "main_manipulator");
+        foundationGripper = hwMap.get(Servo.class, "foundation_manipulator");
+        leftGripper = hwMap.get(Servo.class, "left_auto_manipulator");
+        rightGripper = hwMap.get(Servo.class, "right_auto_manipulator");
+        capstoneGripper = hwMap.get(Servo.class, "capstone_manipulator");
+
+
+        // Initialize Sensors
+        //istance = hwMap.get(DistanceSensor.class,"sensor_distance_left");
+
+//        imu = hwMap.get(BNO055IMU.class,"imu");
+
+
+        // Set Motor Directions
+        frontRight.setDirection(DcMotor.Direction.REVERSE);
+        frontLeft.setDirection(DcMotor.Direction.FORWARD);
+        backRight.setDirection(DcMotor.Direction.REVERSE);
+        backLeft.setDirection(DcMotor.Direction.FORWARD);
+
+        // Stop Motors
+        frontRight.setPower(0);
+        frontLeft.setPower(0);
+        backRight.setPower(0);
+        backLeft.setPower(0);
+        pitchMotor.setPower(0.7);
+        pitchMotor.setTargetPosition(0);
+
+        // Enable All Encoders
+        frontRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        frontLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        backRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        backLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        pitchMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        // Set Servo Positions
+
+        mainGripper.setPosition(1);
+        foundationGripper.setPosition(0.7);
+        leftGripper.setPosition(0);
+        rightGripper.setPosition(1);
+        capstoneGripper.setPosition(0);
+
+    }
+
+
 }
 
