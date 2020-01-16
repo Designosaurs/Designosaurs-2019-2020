@@ -31,7 +31,6 @@ public class SkystoneAutoJan extends LinearOpMode {
     }
 
 
-
     @Override
     public void runOpMode() {
         time.reset();
@@ -48,6 +47,20 @@ public class SkystoneAutoJan extends LinearOpMode {
 
         waitForStart();
         imu.ReadIMU();
+
+
+         while( true ) {
+            telemetry.addData("Dist",robot.getDistance());
+            telemetry.update();
+             if (gamepad1.a) break;
+            //updateSensors();
+        }
+        while( true ) {
+            robot.stopDrive( robot );
+            if (!gamepad1.a) break;
+            // updateSensors();
+        }
+
 
         //robot.moveRampToPosition("right", .4,13.5,robot,this,time);
         robot.moveRampToPosition("forward", .4,24,robot,this,time);

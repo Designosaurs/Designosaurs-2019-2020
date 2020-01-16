@@ -97,7 +97,7 @@ public class HardwareDesignosaursJan {
 
 
         // Initialize Sensors
-        distance = hwMap.get(DistanceSensor.class,"sensor_range");
+        distance = hwMap.get(DistanceSensor.class,"sensor_distance_left");
 
 //        imu = hwMap.get(BNO055IMU.class,"imu");
 
@@ -377,17 +377,7 @@ public class HardwareDesignosaursJan {
         backLeft.setMode(mode);
     }
     
-    void runToPost(Direction direction, double speed, double target, LinearOpMode opMode) {
-        direction = maybeFlip(direction);
-        runDirection(speed,direction);
-        while (distance.getDistance(DistanceUnit.INCH) < target){
-            opMode.idle();
-        }
-        while (distance.getDistance(DistanceUnit.INCH) > target){
-            opMode.idle();
-        }
-        setPowers(0);
-    }
+
 
     void runDirection(double speed, Direction direction) {
         setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
