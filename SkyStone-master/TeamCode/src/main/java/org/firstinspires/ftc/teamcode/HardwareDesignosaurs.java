@@ -300,7 +300,7 @@ public class HardwareDesignosaurs {
         double rampDownSpeed = 0;
         double currentSpeed = 0;
         boolean rampDownLock = false;
-        //loop until any of the motors are in position
+        //ReadIMU until any of the motors are in position
         while ((Robot.frontRight.isBusy() && Robot.frontLeft.isBusy() && Robot.backRight.isBusy() && Robot.backLeft.isBusy()) && opMode.opModeIsActive()) {
             // calculate rampup, delta time * accel var
             nowTime = time.time();
@@ -329,7 +329,7 @@ public class HardwareDesignosaurs {
             opMode.telemetry.addData("fl",Robot.frontLeft.getCurrentPosition());
             opMode.telemetry.addData("br",Robot.backRight.getCurrentPosition());
             opMode.telemetry.addData("bl",Robot.backLeft.getCurrentPosition());
-            opMode.telemetry.addData("loop ps", 1/deltaTime);
+            opMode.telemetry.addData("ReadIMU ps", 1/deltaTime);
             opMode.telemetry.addData("ramp up speed", rampUpSpeed);
             opMode.telemetry.addData("ramp down speed", rampDownSpeed);
             opMode.telemetry.addData("target speed", currentSpeed);

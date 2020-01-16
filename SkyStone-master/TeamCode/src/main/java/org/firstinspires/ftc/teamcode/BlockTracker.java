@@ -4,10 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.robocol.RobocolConfig;
 import com.qualcomm.robotcore.util.ElapsedTime;
-
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 import java.util.concurrent.TimeUnit;
 
@@ -46,7 +43,7 @@ public class BlockTracker extends LinearOpMode {
 
 
         waitForStart();
-        imu.loop();
+        imu.ReadIMU();
         double imuTarget = imu.getHeading();
 
         robot.moveRTP("backward", .4, 20, robot, this, time);
@@ -60,9 +57,9 @@ public class BlockTracker extends LinearOpMode {
             deltTime = (currTime - lastTime)/1000;
             lastTime = currTime;
 
-            // loop sensors
+            // ReadIMU sensors
             camera.loop();
-            imu.loop();
+            imu.ReadIMU();
 
             // find errors
             camError = (310 - (double) camera.getBorderX())/350;
