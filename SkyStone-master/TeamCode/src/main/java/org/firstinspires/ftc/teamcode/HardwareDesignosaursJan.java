@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 public class HardwareDesignosaursJan {
@@ -39,6 +40,9 @@ public class HardwareDesignosaursJan {
     public DistanceSensor sensorDistance  = null;  // This is the one built into the color sensor.  Not accurate.
     public DistanceSensor sensorRange = null;      // The 2 Meter, accurate sensor.
 
+
+    private ElapsedTime time = new ElapsedTime();
+
     //    public BNO055IMU imu = null;
 //    Orientation angles = null;
 //    Acceleration gravity;
@@ -54,10 +58,6 @@ public class HardwareDesignosaursJan {
         CCW
     }
     public boolean flip = false;
-    public double startEncoder;
-    public double lastTime = 0;
-    public double deltaTime = 0;
-    public double speed = 0;
     public double accelPerSec = .8;
     public double decelPGain = encoder_ticks_per_inch / 45;
     public double minSpeed = .2;
@@ -71,8 +71,6 @@ public class HardwareDesignosaursJan {
                     (wheel_diameter * Math.PI)/
                             encoder_ticks_per_revolution; // used in encoder drive
 
-    private static final String VUFORIA_KEY =
-            "AdCuaEX/////AAABmXYJgRHZxkB9gj+81cIaX+JZm4W2w3Ee2HhKucJINnuXQ8l214BoCiyEk04zmQ/1VPvo+8PY7Um3eI5rI4WnSJmEXo7jyMz2WZDkkRnA88uBCtbml8CsMSIS7J3aUcgVd9P8ocLLgwqpavhEEaUixEx/16rgzIEtuHcq5ghQzzCkqR1xvAaxnx5lWM+ixf6hBCfZEnaiUM7WjD4gflO55IpoO/CdCWQrGUw2LuUKW2J+4K6ftKwJ+B1Qdy7pt2tDrGZvMyB4AcphPuoJRCSr5NgRoNWZ+WH5LqAdzYEO0Bv7C9LeSgmSPPT7GPPDpjv6+3DO5BE6l+2uMYQQbuF11BWKKq5Xp+D5Y6l2+W97zpgP";
     public static final float mmPerInch = 25.4f;
 
     HardwareMap hwMap = null;
@@ -170,11 +168,11 @@ public class HardwareDesignosaursJan {
         Robot.backLeft.setPower(speed);
     }
 
-    public void stopDrive( HardwareDesignosaursJan Robot ){
-        Robot.frontRight.setPower(0);
-        Robot.frontLeft.setPower(0);
-        Robot.backRight.setPower(0);
-        Robot.backLeft.setPower(0);
+    public void stopDrive(  ){
+        frontRight.setPower(0);
+        frontLeft.setPower(0);
+        backRight.setPower(0);
+        backLeft.setPower(0);
     }
 
     public void moveRampToPosition(String direction, double maxSpeed, double distance, HardwareDesignosaursJan Robot, LinearOpMode opMode, ElapsedTime time) {
@@ -307,11 +305,96 @@ public class HardwareDesignosaursJan {
         backRight.setMode(mode);
         backLeft.setMode(mode);
     }
-    
 
 
-    void runDirection(double speed, Direction direction) {
-        setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+    // Drive until the proximity sensor (part of the color / prox sensor) shows less than the target value.
+    // This is intended to be close so we go slow, and with encoders so we creep.
+    // Return true if successful.
+    boolean driveToProx( double targetProx, double TimeoutSecs, LinearOpMode opMode ){
+        double startTime = time.now(TimeUnit.MILLISECONDS);
+        double Prox = 1000;
+        while (time.now(TimeUnit.MILLISECONDS) - startTime < TimeoutSecs * 1000 ) {
+            runDirection(0.05, Direction.BACKWARD, true);
+            Prox = sensorDistance.getDistance(DistanceUnit.CM);
+            opMode.telemetry.addData("Doing", "driveToProx");
+            opMode.telemetry.addData("Prox (cm)",
+                    String.format(Locale.US, "%.01f", Prox ));
+            opMode.telemetry.update();
+            if (Prox < targetProx){
+                stopDrive();
+                return true;
+            }
+        }
+        stopDrive();
+        return false;
+    }
+
+    // Drive until the proximity sensor (part of the color / prox sensor) shows less than the target value.
+    // This is intended to be close so we go slow, and with encoders so we creep.
+    // Return true if successful.
+    void delaySecs( double  TimeoutSecs  ){
+        double startTime = time.now(TimeUnit.MILLISECONDS);
+        while (time.now(TimeUnit.MILLISECONDS) - startTime < TimeoutSecs * 1000 ) {
+        }
+        stopDrive();
+
+    }
+
+
+
+
+    // Creep slowly until the color sensor detects a transition, denoting the edge of the
+    // target on the skystone.
+    // We look only for red as that appears to have the greatest contrast.
+    // Return true with the robot stopped if we found the edge.
+    // Return false with the robot stopped if we went the maxDistance without
+    // seeing an edge.
+    boolean driveToColorEdge( Direction direction, double maxDistance, LinearOpMode opMode ){
+        int red = 0;
+        double encDist = 0;
+        int encReading = 0;
+
+
+        setMode( DcMotor.RunMode.STOP_AND_RESET_ENCODER); //Reset all encoders.
+        opMode.telemetry.addData("fl", frontLeft.getCurrentPosition());
+        opMode.telemetry.update();
+        delaySecs( 10.0 );
+
+        // Run until we see that edge, or maxDistane, whichever is first.
+        do {
+            runDirection(0.05, direction, true);
+
+            opMode.telemetry.addData("Doing", "driveToProx");
+            opMode.telemetry.addData("tpi", encoder_ticks_per_inch );
+
+
+            encReading = frontLeft.getCurrentPosition();
+            opMode.telemetry.addData("fl", encReading );
+
+            //encDist = Math.abs( ((double) encReading) / encoder_ticks_per_inch );
+            encDist = ((double) encReading) / encoder_ticks_per_inch ;
+            opMode.telemetry.addData("Dist ",
+                    String.format(Locale.US, "%.01f", encDist ));
+
+            encDist = Math.abs( ((double) encReading) * encoder_ticks_per_inch );
+            opMode.telemetry.addData("Dist ",
+                    String.format(Locale.US, "%.01f", encDist ));
+            opMode.telemetry.update();
+        } while ( encDist < maxDistance );
+        stopDrive();
+        return false;
+    }
+
+
+
+
+
+    void runDirection(double speed, Direction direction, boolean withEncoders ) {
+        if ( withEncoders ){
+            setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        } else {
+            setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        }
         if (direction == Direction.FORWARD) {
             frontLeft.setPower(-speed);
             frontRight.setPower(-speed);

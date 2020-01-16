@@ -32,12 +32,12 @@ public class SkystoneAutoJan extends LinearOpMode {
     private void waitForGreen()  {
         if (!enabableStops) return;
         while( true ) {
-            robot.stopDrive( robot );
+            robot.stopDrive( );
             if (gamepad1.a) break;
             //updateSensors();
         }
         while( true ) {
-            robot.stopDrive( robot );
+            robot.stopDrive( );
             if (!gamepad1.a) break;
            // updateSensors();
         }
@@ -60,6 +60,13 @@ public class SkystoneAutoJan extends LinearOpMode {
 
         waitForStart();
         imu.ReadIMU();
+
+        robot.driveToColorEdge( HardwareDesignosaursJan.Direction.LEFT, 6.0, this);
+        waitForGreen();
+
+        robot.driveToProx( 10.0, 3.0, this);
+        waitForGreen();
+
 
 
          while( true ) {
@@ -87,7 +94,7 @@ public class SkystoneAutoJan extends LinearOpMode {
             //updateSensors();
         }
         while( true ) {
-            robot.stopDrive( robot );
+            robot.stopDrive( );
             if (!gamepad1.a) break;
             // updateSensors();
         }
