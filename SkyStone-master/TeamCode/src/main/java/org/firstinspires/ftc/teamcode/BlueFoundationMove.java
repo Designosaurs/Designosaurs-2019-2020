@@ -34,8 +34,8 @@ public class BlueFoundationMove extends LinearOpMode{
             telemetry.addData("time elapsed", runtime.time(TimeUnit.MILLISECONDS));
             telemetry.update();
         }
-        //Robot.moveRTP("forward", .4, 1.0 ,Robot, this, runtime);
-        //Robot.moveRTP("left", .4, 12 ,Robot, this, runtime);
+        //Robot.moveRampToPosition("forward", .4, 1.0 ,Robot, this, runtime);
+        //Robot.moveRampToPosition("left", .4, 12 ,Robot, this, runtime);
 
         while (runtime.now(TimeUnit.SECONDS)-matchStartTime < 26 && opModeIsActive()) {
             telemetry.addData("time left:", 30- runtime.time(TimeUnit.SECONDS));

@@ -239,7 +239,14 @@ public class HardwareDesignosaursJan {
         Robot.backLeft.setPower(speed);
     }
 
-    public void moveRTP(String direction, double maxSpeed, double distance, HardwareDesignosaursJan Robot, LinearOpMode opMode, ElapsedTime time) {
+    public void stopDrive( HardwareDesignosaursJan Robot ){
+        Robot.frontRight.setPower(0);
+        Robot.frontLeft.setPower(0);
+        Robot.backRight.setPower(0);
+        Robot.backLeft.setPower(0);
+    }
+
+    public void moveRampToPosition(String direction, double maxSpeed, double distance, HardwareDesignosaursJan Robot, LinearOpMode opMode, ElapsedTime time) {
         // this function moves the specified number of inches in the given direction using acceleration ramps along with the built-in PIDs
         double encDist = distance / encoder_ticks_per_inch; // calculate distance in encoder counts
 
@@ -335,9 +342,9 @@ public class HardwareDesignosaursJan {
         backLeft.setDirection(DcMotor.Direction.FORWARD);
     }
 
-    public void moveRTP(Direction direction, double maxSpeed, double distance, HardwareDesignosaursJan Robot, LinearOpMode opMode, ElapsedTime time) {
+    public void moveRampToPosition(Direction direction, double maxSpeed, double distance, HardwareDesignosaursJan Robot, LinearOpMode opMode, ElapsedTime time) {
         direction = maybeFlip(direction);
-        moveRTP(direction.toString().toLowerCase(), maxSpeed, distance, Robot, opMode, time);
+        moveRampToPosition(direction.toString().toLowerCase(), maxSpeed, distance, Robot, opMode, time);
     }
 
     void moveDirection(double north, double west, double rotate, HardwareDesignosaursJan robot) {

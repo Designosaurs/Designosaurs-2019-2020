@@ -169,7 +169,7 @@ public class RedSkystoneAuto extends LinearOpMode{
         } else if (pos == 2) {
             Robot.moveRTP("left", .5, 50.0 ,Robot, this, runtime);
         }
-        //Robot.moveRTP("backward", 1, 1 ,Robot, this, runtime);
+        //Robot.moveRampToPosition("backward", 1, 1 ,Robot, this, runtime);
         Robot.rightGripper.setPosition(1);
         runtime.reset();
         while (runtime.time(TimeUnit.MILLISECONDS) < 450 && opModeIsActive()) {

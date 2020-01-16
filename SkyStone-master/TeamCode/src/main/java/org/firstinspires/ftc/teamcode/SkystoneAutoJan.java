@@ -11,14 +11,26 @@ public class SkystoneAutoJan extends LinearOpMode {
     HardwareDesignosaursJan robot = new HardwareDesignosaursJan();
     ElapsedTime time = new ElapsedTime();
 
-       double disOut;
 
-    double lastTime;
-    double deltTime;
-    double currTime;
 
-    double fireAtWill = 0;
-    double imuTarget;
+    boolean enabableStops = true; // Set to true to stop between steps for debugging.
+    // Debugging aid-- wait for press of green button (a).
+    //  Add these as needed so you can setp through the critical parts.
+    private void waitForGreen()  {
+        if (!enabableStops) return;
+        while( true ) {
+            robot.stopDrive( robot );
+            if (gamepad1.a) break;
+            //updateSensors();
+        }
+        while( true ) {
+            robot.stopDrive( robot );
+            if (!gamepad1.a) break;
+           // updateSensors();
+        }
+    }
+
+
 
     @Override
     public void runOpMode() {
@@ -36,27 +48,27 @@ public class SkystoneAutoJan extends LinearOpMode {
 
         waitForStart();
         imu.ReadIMU();
-        imuTarget = imu.getHeading() + 90;
 
-        //robot.moveRTP("right", .4,13.5,robot,this,time);
-        //robot.moveRTP("forward", .4,2,robot,this,time);
+        //robot.moveRampToPosition("right", .4,13.5,robot,this,time);
+        robot.moveRampToPosition("forward", .4,24,robot,this,time);
+        waitForGreen();
         robot.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         imu.turnSimp(90,robot,this);
         //lockOn(false,false, .4);
 
-        //robot.moveRTP(HardwareDesignosaurs.Direction.BACKWARD, .4, 6, robot, this, time);
+        //robot.moveRampToPosition(HardwareDesignosaurs.Direction.BACKWARD, .4, 6, robot, this, time);
         //robot.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         //robot.leftGripper.setPosition(0);
         //robot.wait(1,this,time);
 
-        //robot.moveRTP(HardwareDesignosaurs.Direction.LEFT, .6, 50,robot,this,time);
+        //robot.moveRampToPosition(HardwareDesignosaurs.Direction.LEFT, .6, 50,robot,this,time);
         //robot.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         //lockOn();
-        //robot.moveRTP(HardwareDesignosaurs.Direction.RIGHT,.6,50,robot,this,time);
+        //robot.moveRampToPosition(HardwareDesignosaurs.Direction.RIGHT,.6,50,robot,this,time);
         //robot.leftGripper.setPosition(0);
         //robot.wait(1,this,time);
-        //robot.moveRTP(HardwareDesignosaurs.Direction.LEFT,.6,10,robot,this,time);
+        //robot.moveRampToPosition(HardwareDesignosaurs.Direction.LEFT,.6,10,robot,this,time);
 
     }
 
