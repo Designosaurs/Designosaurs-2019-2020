@@ -67,7 +67,7 @@ public class imudistTest extends LinearOpMode
     // State used for updating telemetry
     Orientation angles;
     Acceleration gravity;
-    HardwareDesignosaurs Robot = new HardwareDesignosaurs();
+    Hardware Robot = new Hardware();
 
     double speed = .2;
     double skewGain = 0.01;
@@ -101,7 +101,7 @@ public class imudistTest extends LinearOpMode
         // Wait until we're told to go
         distance = hardwareMap.get(DistanceSensor.class,"sensor_range");
 
-        Robot.init(hardwareMap, 0, 0, 0);
+        Robot.init2(hardwareMap, 0, 0, 0);
         waitForStart();
 
         // Start the logging of measured acceleration

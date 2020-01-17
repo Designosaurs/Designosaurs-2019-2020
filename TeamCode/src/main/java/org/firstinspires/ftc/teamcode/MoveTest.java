@@ -11,13 +11,13 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 @Autonomous(name="RTP Test no function", group="test")
 public class MoveTest extends LinearOpMode {
 
-    HardwareDesignosaurs Robot = new HardwareDesignosaurs();
+    Hardware Robot = new Hardware();
     private ElapsedTime runtime = new ElapsedTime();
 
     @Override
     public void runOpMode() {
         waitForStart();
-        Robot.init(hardwareMap, 0, 0, 0);
+        Robot.init2(hardwareMap, 0, 0, 0);
 
         double encDist = 1120;
         /*

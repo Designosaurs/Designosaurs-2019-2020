@@ -14,7 +14,7 @@
 //@Autonomous(name = "IMU Test OpMode", group = "IMU")
 //public class imuTest extends LinearOpMode {
 //
-//    HardwareDesignosaurs Robot = new HardwareDesignosaurs();
+//    Hardware Robot = new Hardware();
 //    private ElapsedTime runtime = new ElapsedTime();
 //
 //    double speed = .2;

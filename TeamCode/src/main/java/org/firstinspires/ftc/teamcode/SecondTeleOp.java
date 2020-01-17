@@ -14,7 +14,7 @@ public class SecondTeleOp extends OpMode {
     boolean isLowGear = false;
 
 
-    HardwareDesignosaurs Robot = new HardwareDesignosaurs();
+    Hardware Robot = new Hardware();
     private ElapsedTime runtime = new ElapsedTime();
 
     double lastTime = runtime.now(TimeUnit.MILLISECONDS);
@@ -108,14 +108,14 @@ public class SecondTeleOp extends OpMode {
         telemetry.update();
 
         if (gamepad2.dpad_up) {
-            Robot.leftGripper.setPosition(0);
+            Robot.mainGripperLeft.setPosition(0);
         } else if (gamepad2.dpad_down) {
-            Robot.leftGripper.setPosition(1);
+            Robot.mainGripperLeft.setPosition(1);
         }
         if (gamepad2.a) {
-            Robot.rightGripper.setPosition(1);
+            Robot.mainGripperRight.setPosition(1);
         } else if (gamepad2.y) {
-            Robot.rightGripper.setPosition(0);
+            Robot.mainGripperRight.setPosition(0);
         }
 
         // set position of foundation manipulator
