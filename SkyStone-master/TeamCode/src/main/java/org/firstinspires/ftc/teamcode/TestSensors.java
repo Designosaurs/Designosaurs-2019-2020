@@ -30,7 +30,7 @@ public class TestSensors extends LinearOpMode {
     public void runOpMode() {
         time.reset();
         robot.init2(hardwareMap,0,0,0);
-        
+
         waitForStart();
         while( true ) {
 

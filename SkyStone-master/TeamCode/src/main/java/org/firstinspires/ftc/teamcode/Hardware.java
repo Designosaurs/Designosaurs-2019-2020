@@ -15,7 +15,6 @@ import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 public class Hardware {
-
     // Define Motors
     public DcMotor frontRight = null;
     public DcMotor frontLeft  = null;
@@ -42,11 +41,6 @@ public class Hardware {
 
 
     private ElapsedTime time = new ElapsedTime();
-
-    //    public BNO055IMU imu = null;
-//    Orientation angles = null;
-//    Acceleration gravity;
-//    double heading = 0;
 
     // Define Variables
     enum Direction {
@@ -79,11 +73,7 @@ public class Hardware {
 
     }
 
-
-    public void init(HardwareMap ahwMap) {
-        init(ahwMap,0,0,0);
-    }
-
+    //////////////////////////////////////  INITIALIZATION ///////////////////////////////////////
     public void init2(HardwareMap hwMap) {
         // Initialize Motors
         // the FR & FL motors are intentionally switched due to a bug
@@ -116,9 +106,6 @@ public class Hardware {
         // 'distance' here is very short range, and no calibration at all.
         sensorDistance = hwMap.get(DistanceSensor.class, "sensor_color_distance");
 
-
-
-
         // Set Motor Directions
         frontRight.setDirection(DcMotor.Direction.REVERSE);
         frontLeft.setDirection(DcMotor.Direction.FORWARD);
@@ -147,8 +134,14 @@ public class Hardware {
 
         rightAutoManipulator.setPosition(1);
         capstoneGripper.setPosition(0);
+        resetLeftAutoManipulator();
     }
 
+    //////////////////  SERVO MANIPULATION //////////////////////////
+
+    public void init2(HardwareMap hwMap, int xPos, int yPos, int thetaPos) {
+        init2(hwMap);
+    }
 
     public void resetLeftAutoManipulator (  ){
         leftAutoManipulator.setPosition(0);
@@ -159,11 +152,85 @@ public class Hardware {
     }
 
 
+    ///////////////////////////////  SENSORS ////////////////////////////////////
+
+    boolean seesYellow( LinearOpMode opMode ){
+        int red = 0;
+        red = sensorColor.red();
+        opMode.telemetry.addData("Red", red );
+        if ( red > 50 ) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 
 
 
-    public void init2(HardwareMap hwMap, int xPos, int yPos, int thetaPos) {
-        init2(hwMap);
+    /////////////////////////////  MOVES /////////////////////////////////////////////
+    // Drive until the proximity sensor (part of the color / prox sensor) shows less than the target value.
+    // This is intended to be close so we go slow, and with encoders so we creep.
+    // Return true if successful.
+    boolean driveToProx( double targetProx, double TimeoutSecs, LinearOpMode opMode ){
+        double startTime = time.now(TimeUnit.MILLISECONDS);
+        double Prox = 1000;
+        while (time.now(TimeUnit.MILLISECONDS) - startTime < TimeoutSecs * 1000 ) {
+            runDirection(0.05, Direction.BACKWARD, true);
+            Prox = sensorDistance.getDistance(DistanceUnit.CM);
+            opMode.telemetry.addData("Doing", "driveToProx");
+            opMode.telemetry.addData("Prox (cm)",
+                    String.format(Locale.US, "%.01f", Prox ));
+            opMode.telemetry.update();
+            if (Prox < targetProx){
+                stopDrive();
+                return true;
+            }
+        }
+        stopDrive();
+        return false;
+    }
+
+    // Creep slowly until the color sensor detects a transition, denoting the edge of the
+    // target on the skystone.
+    // We look only for red as that appears to have the greatest contrast.
+    // Return true with the robot stopped if we found the edge.
+    // Return false with the robot stopped if we went the maxDistance without
+    // seeing an edge.
+    boolean driveToColorEdge( Direction direction, double maxDistance, boolean lookForYellow, LinearOpMode opMode ){
+
+        double encDist = 0;
+        int encReading = 0;
+        setMode( DcMotor.RunMode.STOP_AND_RESET_ENCODER); //Reset all encoders.
+
+        // Run until we see that edge, or maxDistane, whichever is first.
+        do {
+            runDirection(0.05, direction, true);
+
+            opMode.telemetry.addData("Doing", "driveToColorEdge");
+            encReading = frontLeft.getCurrentPosition();
+            opMode.telemetry.addData("fl enc", encReading );
+            encDist = Math.abs( ((double) encReading) * INCHES_PER_ENCODER_TICK);
+            opMode.telemetry.addData("Dist ",
+                    String.format(Locale.US, "%.01f", encDist ));
+
+            // If we are looking for yellow, stop when we see it.
+            if (lookForYellow){
+                if ( seesYellow( opMode)) {
+                    stopDrive();
+                    opMode.telemetry.update();
+                    return true;
+                }
+            } else {
+                if ( !seesYellow( opMode)) {
+                    stopDrive();
+                    opMode.telemetry.update();
+                    return true;
+                }
+            }
+            opMode.telemetry.update();
+        } while ( encDist < maxDistance );
+        stopDrive();
+        return false;
     }
 
 
@@ -269,6 +336,8 @@ public class Hardware {
             opMode.telemetry.addData("target speed", currentSpeed);
             opMode.telemetry.update();
         }
+
+
         // wait for 500ms so PIDs can settle
         time.reset();
         while (time.time(TimeUnit.MILLISECONDS) < 500 && opMode.opModeIsActive()) {
@@ -283,6 +352,7 @@ public class Hardware {
         backRight.setDirection(DcMotor.Direction.REVERSE);
         backLeft.setDirection(DcMotor.Direction.FORWARD);
     }
+
 
     public void moveRampToPosition(Direction direction, double maxSpeed, double distance, Hardware Robot, LinearOpMode opMode, ElapsedTime time) {
         direction = maybeFlip(direction);
@@ -320,27 +390,7 @@ public class Hardware {
     }
 
 
-    // Drive until the proximity sensor (part of the color / prox sensor) shows less than the target value.
-    // This is intended to be close so we go slow, and with encoders so we creep.
-    // Return true if successful.
-    boolean driveToProx( double targetProx, double TimeoutSecs, LinearOpMode opMode ){
-        double startTime = time.now(TimeUnit.MILLISECONDS);
-        double Prox = 1000;
-        while (time.now(TimeUnit.MILLISECONDS) - startTime < TimeoutSecs * 1000 ) {
-            runDirection(0.05, Direction.BACKWARD, true);
-            Prox = sensorDistance.getDistance(DistanceUnit.CM);
-            opMode.telemetry.addData("Doing", "driveToProx");
-            opMode.telemetry.addData("Prox (cm)",
-                    String.format(Locale.US, "%.01f", Prox ));
-            opMode.telemetry.update();
-            if (Prox < targetProx){
-                stopDrive();
-                return true;
-            }
-        }
-        stopDrive();
-        return false;
-    }
+
 
     // Drive until the proximity sensor (part of the color / prox sensor) shows less than the target value.
     // This is intended to be close so we go slow, and with encoders so we creep.
@@ -352,65 +402,6 @@ public class Hardware {
         stopDrive();
 
     }
-
-    boolean seesYellow( LinearOpMode opMode ){
-        int red = 0;
-        red = sensorColor.red();
-        opMode.telemetry.addData("Red", red );
-        if ( red > 50 ) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-
-
-    // Creep slowly until the color sensor detects a transition, denoting the edge of the
-    // target on the skystone.
-    // We look only for red as that appears to have the greatest contrast.
-    // Return true with the robot stopped if we found the edge.
-    // Return false with the robot stopped if we went the maxDistance without
-    // seeing an edge.
-    boolean driveToColorEdge( Direction direction, double maxDistance, boolean lookForYellow, LinearOpMode opMode ){
-
-        double encDist = 0;
-        int encReading = 0;
-        setMode( DcMotor.RunMode.STOP_AND_RESET_ENCODER); //Reset all encoders.
-
-        // Run until we see that edge, or maxDistane, whichever is first.
-        do {
-            runDirection(0.05, direction, true);
-
-            opMode.telemetry.addData("Doing", "driveToColorEdge");
-            encReading = frontLeft.getCurrentPosition();
-            opMode.telemetry.addData("fl enc", encReading );
-            encDist = Math.abs( ((double) encReading) * INCHES_PER_ENCODER_TICK);
-            opMode.telemetry.addData("Dist ",
-                    String.format(Locale.US, "%.01f", encDist ));
-
-            // If we are looking for yellow, stop when we see it.
-            if (lookForYellow){
-                if ( seesYellow( opMode)) {
-                    stopDrive();
-                    opMode.telemetry.update();
-                    return true;
-                }
-            } else {
-                if ( !seesYellow( opMode)) {
-                    stopDrive();
-                    opMode.telemetry.update();
-                    return true;
-                }
-            }
-            opMode.telemetry.update();
-        } while ( encDist < maxDistance );
-        stopDrive();
-        return false;
-    }
-
-
-
 
 
     void runDirection(double speed, Direction direction, boolean withEncoders ) {
@@ -497,64 +488,6 @@ public class Hardware {
 
         }
     }
-
-    public void init(HardwareMap ahwMap, int xPos, int yPos, int thetaPos) {
-        hwMap = ahwMap;
-
-        // Initialize Motors
-        frontRight = hwMap.get(DcMotor.class,"front_right");
-        frontLeft = hwMap.get(DcMotor.class,"front_left");
-        backRight = hwMap.get(DcMotor.class,"back_right");
-        backLeft = hwMap.get(DcMotor.class,"back_left");
-        pitchMotor = hwMap.get(DcMotor.class, "pitch_motor");
-        liftMotor = hwMap.get(DcMotor.class, "lift_motor");
-
-        // Initialize Servos
-        mainGripper = hwMap.get(Servo.class, "main_manipulator");
-        foundationGripper = hwMap.get(Servo.class, "foundation_manipulator");
-        leftAutoManipulator = hwMap.get(Servo.class, "leftAutoManipulator");
-        rightAutoManipulator = hwMap.get(Servo.class, "right_auto_manipulator");
-        capstoneGripper = hwMap.get(Servo.class, "capstone_manipulator");
-
-
-        // Initialize Sensors
-        //istance = hwMap.get(DistanceSensor.class,"sensor_distance_left");
-
-//        imu = hwMap.get(BNO055IMU.class,"imu");
-
-
-        // Set Motor Directions
-        frontRight.setDirection(DcMotor.Direction.REVERSE);
-        frontLeft.setDirection(DcMotor.Direction.FORWARD);
-        backRight.setDirection(DcMotor.Direction.REVERSE);
-        backLeft.setDirection(DcMotor.Direction.FORWARD);
-
-        // Stop Motors
-        frontRight.setPower(0);
-        frontLeft.setPower(0);
-        backRight.setPower(0);
-        backLeft.setPower(0);
-        pitchMotor.setPower(0.7);
-        pitchMotor.setTargetPosition(0);
-
-        // Enable All Encoders
-        frontRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        frontLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        backRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        backLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        pitchMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-        // Set Servo Positions
-
-        mainGripper.setPosition(1);
-        foundationGripper.setPosition(0.7);
-        leftAutoManipulator.setPosition(0);
-        rightAutoManipulator.setPosition(1);
-        capstoneGripper.setPosition(0);
-
-    }
-
 
 }
 
