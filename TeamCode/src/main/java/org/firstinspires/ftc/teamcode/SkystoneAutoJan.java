@@ -36,7 +36,7 @@ public class SkystoneAutoJan extends LinearOpMode {
     // Return true if this is the target stone.
     // Will leave the bot right next to the stone.
     boolean checkForTarget() {
-        robot.driveToProx(8.0, 6.0, this);
+        robot.driveToProx(6.0, 6.0, this);
         waitForYellow();
 
         return !robot.seesYellow(this);
@@ -49,11 +49,11 @@ public class SkystoneAutoJan extends LinearOpMode {
 
         // Strafe to where we came from to get the grabber centered.
         robot.moveRampToPosition("right", .3, 9.5, robot, this, time);
-        waitForYellow();
+        //waitForYellow();
 
         // Backward (toward stone)  to be ready to grab that stone.
         robot.moveRampToPosition("backward", .4, 1.0, robot, this, time);
-        waitForYellow();
+        //waitForYellow();
 
         // Deploy manipulator
         robot.deployLeftAutoManipulator();
@@ -89,23 +89,23 @@ public class SkystoneAutoJan extends LinearOpMode {
         // POSITION IN FRONT OF FIRST STONE
         // Strafe away from wall.
         robot.moveRampToPosition("left", .4, 13.5, robot, this, time);
-        waitForYellow();
+        //waitForYellow();
 
         // Go toward bridge a tiny bit to be right in front of stone #1.
         robot.moveRampToPosition("backward", .4, 3, robot, this, time);
-        waitForYellow();
+        //waitForYellow();
 
         // Rotate the robot so the back (sensor / manipulator) side faces stones.
         robot.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         imu.turnAndCorrect(-90, robot, this);
-        waitForYellow();
+        //waitForYellow();
 
         // Go toward the stone (backward) to just a few inches fron stone #1.
         robot.moveRampToPosition("backward", .3, 11, robot, this, time);
         waitForYellow();
 
 
-        double stoneLength = 8.0;
+        double stoneLength = 7.0;
         double distanceToGo = 0.0;
 
         // FIND THE TARGET STONE
@@ -116,11 +116,8 @@ public class SkystoneAutoJan extends LinearOpMode {
             grabStone();
         }
         // If target was not stone 1, see if it is stone 2.
-        if (targetStoneNumber != 0){
-            telemetry.addData("Target Stone", targetStoneNumber);
-            telemetry.addData("Checking", "Stone 2");
-            telemetry.update();
-            waitForYellow();
+        if (targetStoneNumber == 0){
+          waitForYellow();
             // Back a tiny bit
             robot.moveRampToPosition("forward", .4, 1, robot, this, time);
             // Move to outside
@@ -134,40 +131,39 @@ public class SkystoneAutoJan extends LinearOpMode {
             }
         }
         // If we have not found the target yet, see if it is stone #3.
-        if (targetStoneNumber != 0){
-            telemetry.addData("Target Stone", targetStoneNumber);
-            telemetry.addData("Checking", "Stone 3");
-            telemetry.update();
+        if (targetStoneNumber == 0){
             waitForYellow();
             // Back a tiny bit
-            robot.moveRampToPosition("forward", .4, 1, robot, this, time);
+            robot.moveRampToPosition("forward", .3, 1, robot, this, time);
             // Move to outside
-            robot.moveRampToPosition("left", .4, stoneLength, robot, this, time);
+            robot.moveRampToPosition("left", .3, stoneLength, robot, this, time);
             waitForYellow();
 
             if (checkForTarget()) {
-                // It is stone #2.  Grab it.
-                targetStoneNumber = 2;
+                // It is stone #3.  Grab it.
+                targetStoneNumber = 3;
                 grabStone();
+            } else {
+                // We cound not find the stone!  Snap!
+                // Our best bet is to park under the bridge.
+                // Things appear to have gone awry and that is the least ambitious move.
+                // You are two stone lengths further outside than stone 1.
+                distanceToGo = 19 + 2.0 * stoneLength;
+                robot.moveRampToPosition("right", .4, distanceToGo, robot, this, time);
+                waitForYellow();
             }
-        } else {
-            // We cound not find the stone!  Snap!
-            // Our best bet is to park under the bridge.
-            // Things appear to have gone awry and that is the least ambitious move.
-            distanceToGo = 19 + 2.0 * stoneLength;
-            robot.moveRampToPosition("right", .4, distanceToGo, robot, this, time);
-            waitForYellow();
         }
 
         // SHUTTLE IT TO THE OTHER SIDE
-        // Go under the bridge
-        distanceToGo = 36 + 2.0 * stoneLength * ( (double) targetStoneNumber - 1.0);
+        // Go under the bridge.
+        distanceToGo = 30 + (stoneLength * ( (double) targetStoneNumber - 1.0));
         robot.moveRampToPosition("right", .4, distanceToGo, robot, this, time);
         waitForYellow();
 
+        // Drop the stone and park under the bridge.
         robot.resetLeftAutoManipulator();
         //distanceToGo = 36 + 2.0 * stoneLength * ( (double) targetStoneNumber - 1.0)
-        distanceToGo = 12;
+        distanceToGo = 9;
         robot.moveRampToPosition("left", .4, distanceToGo, robot, this, time);
         waitForYellow();
 
