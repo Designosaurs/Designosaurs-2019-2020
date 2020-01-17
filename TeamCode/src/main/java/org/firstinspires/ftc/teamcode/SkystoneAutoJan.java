@@ -14,7 +14,7 @@ public class SkystoneAutoJan extends LinearOpMode {
     int targetStoneNumber = 0; // numbered from the inside (toward bridge), starting with 1.
 
 
-    boolean enabableStops = false; // Set to true to stop between steps for debugging.
+    boolean enabableStops = true; // Set to true to stop between steps for debugging.
 
     // Debugging aid-- wait for press of green button (a).
     //  Add these as needed so you can setp through the critical parts.
@@ -45,18 +45,18 @@ public class SkystoneAutoJan extends LinearOpMode {
     void grabStone() {
         // Creep until get into the Yellow.
         robot.driveToColorEdge(Hardware.Direction.LEFT, 6.0, true, this);
-        waitForYellow();
+        //waitForYellow();
 
         // Strafe to where we came from to get the grabber centered.
-        robot.moveRampToPosition("right", .3, 9.5, robot, this, time);
+        robot.moveRampToPosition("right", .3, 8, robot, this, time);
         //waitForYellow();
 
         // Backward (toward stone)  to be ready to grab that stone.
-        robot.moveRampToPosition("backward", .4, 1.0, robot, this, time);
+        robot.moveRampToPosition("backward", .4, .7, robot, this, time);
         //waitForYellow();
 
         // Deploy manipulator
-        robot.deployLeftAutoManipulator();
+        robot.deployRightAutoManipulator();
         waitForYellow();
 
         // Ease the stone out
@@ -88,7 +88,7 @@ public class SkystoneAutoJan extends LinearOpMode {
 
         // POSITION IN FRONT OF FIRST STONE
         // Strafe away from wall.
-        robot.moveRampToPosition("left", .4, 13.5, robot, this, time);
+        robot.moveRampToPosition("left", .6, 13.5, robot, this, time);
         //waitForYellow();
 
         // Go toward bridge a tiny bit to be right in front of stone #1.
@@ -102,7 +102,7 @@ public class SkystoneAutoJan extends LinearOpMode {
 
         // Go toward the stone (backward) to just a few inches fron stone #1.
         robot.moveRampToPosition("backward", .3, 11, robot, this, time);
-        waitForYellow();
+        //waitForYellow();
 
 
         double stoneLength = 7.0;
@@ -114,6 +114,7 @@ public class SkystoneAutoJan extends LinearOpMode {
             // It is stone #1.  Grab it.
             targetStoneNumber = 1;
             grabStone();
+            waitForYellow();
         }
         // If target was not stone 1, see if it is stone 2.
         if (targetStoneNumber == 0){

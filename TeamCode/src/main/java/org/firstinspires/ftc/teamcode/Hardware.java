@@ -125,6 +125,7 @@ public class Hardware {
         rightAutoManipulator.setPosition(1);
         capstoneGripper.setPosition(0);
         resetLeftAutoManipulator();
+        resetRightAutoManipulator();
     }
 
     public void init2(HardwareMap hwMap, int xPos, int yPos, int thetaPos) {
@@ -138,6 +139,14 @@ public class Hardware {
     }
 
     public void deployLeftAutoManipulator() {
+        leftAutoManipulator.setPosition(1);
+    }
+
+    public void resetRightAutoManipulator() {
+        leftAutoManipulator.setPosition(0);
+    }
+
+    public void deployRightAutoManipulator() {
         leftAutoManipulator.setPosition(1);
     }
 
