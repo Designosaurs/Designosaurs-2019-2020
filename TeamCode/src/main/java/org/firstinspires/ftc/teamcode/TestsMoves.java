@@ -39,7 +39,7 @@ public class TestsMoves extends LinearOpMode {
         imu.ReadIMU();
 
         // Rotate the robot so the back (sensor / manipulator) side faces stones.
-        imu.turnAndCorrect( -90, robot, this);
+        imu.turnAndCorrect(-90, robot, this);
         waitForYellow();
 
         waitForStart();

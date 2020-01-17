@@ -40,28 +40,24 @@ public class SkystoneAutoJan extends LinearOpMode {
     // Call this when facing the stone but a few inchest away.
     // Return true if this is the target stone.
     // Will leave the bot right next to the stone.
-    boolean checkForTarget( ) {
-        robot.driveToProx( 8.0, 3.0, this);
+    boolean checkForTarget() {
+        robot.driveToProx(8.0, 3.0, this);
         waitForYellow();
 
-        if ( robot.seesYellow( this)){
-            return false;
-        } else {
-            return true;
-        }
+        return !robot.seesYellow(this);
     }
 
-    void grabStone( ){
+    void grabStone() {
         // Creep until get into the Yellow.
-        robot.driveToColorEdge( Hardware.Direction.LEFT, 6.0, true ,this);
+        robot.driveToColorEdge(Hardware.Direction.LEFT, 6.0, true, this);
         waitForYellow();
 
         // Strafe to where we came from to get the grabber centered.
-        robot.moveRampToPosition( "right", .4,10.5,robot,this,time);
+        robot.moveRampToPosition("right", .4, 10.5, robot, this, time);
         waitForYellow();
 
         // Backward (toward stone)  to be ready to grab that stone.
-        robot.moveRampToPosition( "backward", .4,1.0,robot,this,time);
+        robot.moveRampToPosition("backward", .4, 1.0, robot, this, time);
         waitForYellow();
 
         // Deploy manipulator
@@ -69,7 +65,7 @@ public class SkystoneAutoJan extends LinearOpMode {
         waitForYellow();
 
         // Ease the stone out
-        robot.moveRampToPosition( "forward", .2,6,robot,this,time);
+        robot.moveRampToPosition("forward", .2, 6, robot, this, time);
         waitForYellow();
     }
 
@@ -96,24 +92,24 @@ public class SkystoneAutoJan extends LinearOpMode {
         // Wheels on the inside seam of the second tile from corner.
 
         // Strafe away from wall.
-        robot.moveRampToPosition("left",.4,13.5,robot,this,time);
+        robot.moveRampToPosition("left", .4, 13.5, robot, this, time);
         waitForYellow();
 
         // Go toward bridge a tiny bit to be right in front of stone #1.
-        robot.moveRampToPosition("backward",.4,1,robot,this,time);
+        robot.moveRampToPosition("backward", .4, 1, robot, this, time);
         waitForYellow();
 
         // Rotate the robot so the back (sensor / manipulator) side faces stones.
         robot.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        imu.turnAndCorrect( -90, robot, this);
+        imu.turnAndCorrect(-90, robot, this);
         waitForYellow();
 
         // Go (backward) to just a few inches fron stone #1.
-        robot.moveRampToPosition("backward",.4,1,robot,this,time);
+        robot.moveRampToPosition("backward", .4, 1, robot, this, time);
         waitForYellow();
 
 
-        if (checkForTarget()){
+        if (checkForTarget()) {
             // It is stone #1.  Grab it.
             targetStoneNumber = 1;
             grabStone();
