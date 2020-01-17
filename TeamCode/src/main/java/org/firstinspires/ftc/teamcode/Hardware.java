@@ -257,31 +257,35 @@ public class Hardware {
         Robot.backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         //set target positions based on direction
-        if (direction == "forward") {
-            setTargetPos(Robot.frontLeft, -encDist);
-            setTargetPos(Robot.frontRight, -encDist);
-            setTargetPos(Robot.backLeft, encDist);
-            setTargetPos(Robot.backRight, encDist);
-
-        } else if (direction == "backward") {
-            setTargetPos(Robot.frontLeft, encDist);
-            setTargetPos(Robot.frontRight, encDist);
-            setTargetPos(Robot.backLeft, -encDist);
-            setTargetPos(Robot.backRight, -encDist);
-        } else if (direction == "left") {
-            setTargetPos(Robot.frontLeft, -encDist * sideBias);
-            setTargetPos(Robot.frontRight, encDist * sideBias);
-            setTargetPos(Robot.backLeft, encDist * sideBias);
-            setTargetPos(Robot.backRight, -encDist * sideBias);
-
-        } else if (direction == "right") {
-            setTargetPos(Robot.frontLeft, encDist * sideBias);
-            setTargetPos(Robot.frontRight, -encDist * sideBias);
-            setTargetPos(Robot.backLeft, -encDist * sideBias);
-            setTargetPos(Robot.backRight, encDist * sideBias);
-        } else {
-            opMode.telemetry.addData("failure", "invalid input");
-            opMode.telemetry.update();
+        switch (direction) {
+            case "forward":
+                setTargetPos(Robot.frontLeft, -encDist);
+                setTargetPos(Robot.frontRight, -encDist);
+                setTargetPos(Robot.backLeft, encDist);
+                setTargetPos(Robot.backRight, encDist);
+                break;
+            case "backward":
+                setTargetPos(Robot.frontLeft, encDist);
+                setTargetPos(Robot.frontRight, encDist);
+                setTargetPos(Robot.backLeft, -encDist);
+                setTargetPos(Robot.backRight, -encDist);
+                break;
+            case "left":
+                setTargetPos(Robot.frontLeft, -encDist * sideBias);
+                setTargetPos(Robot.frontRight, encDist * sideBias);
+                setTargetPos(Robot.backLeft, encDist * sideBias);
+                setTargetPos(Robot.backRight, -encDist * sideBias);
+                break;
+            case "right":
+                setTargetPos(Robot.frontLeft, encDist * sideBias);
+                setTargetPos(Robot.frontRight, -encDist * sideBias);
+                setTargetPos(Robot.backLeft, -encDist * sideBias);
+                setTargetPos(Robot.backRight, encDist * sideBias);
+                break;
+            default:
+                opMode.telemetry.addData("failure", "invalid input");
+                opMode.telemetry.update();
+                break;
         }
 
         // delta time setup

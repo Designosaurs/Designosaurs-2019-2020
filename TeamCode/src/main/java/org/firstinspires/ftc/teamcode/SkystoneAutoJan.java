@@ -12,9 +12,10 @@ public class SkystoneAutoJan extends LinearOpMode {
     ElapsedTime time = new ElapsedTime();
 
     int targetStoneNumber = 0; // numbered from the inside (toward bridge), starting with 1.
-
-
     boolean enabableStops = false; // Set to true to stop between steps for debugging.
+
+    // constant for size of playing element
+    double stoneLength = 7.0;
 
     // Debugging aid-- wait for press of green button (a).
     //  Add these as needed so you can setp through the critical parts.
@@ -65,6 +66,57 @@ public class SkystoneAutoJan extends LinearOpMode {
         waitForYellow();
     }
 
+    // FIND THE TARGET STONE
+    void seekForStone() {
+        double distanceToGo;
+
+        // See if it is stone number 1.
+        if (checkForTarget()) {
+            // It is stone #1.  Grab it.
+            targetStoneNumber = 1;
+            grabStone();
+            waitForYellow();
+        }
+        // If target was not stone 1, see if it is stone 2.
+        if (targetStoneNumber == 0){
+            waitForYellow();
+            // Back a tiny bit
+            robot.moveRampToPosition("forward", .4, 1, robot, this, time);
+            // Move to outside
+            robot.moveRampToPosition("left", .4, stoneLength, robot, this, time);
+            waitForYellow();
+
+            if (checkForTarget()) {
+                // It is stone #2.  Grab it.
+                targetStoneNumber = 2;
+                grabStone();
+            }
+        }
+        // If we have not found the target yet, see if it is stone #3.
+        if (targetStoneNumber == 0){
+            waitForYellow();
+            // Back a tiny bit
+            robot.moveRampToPosition("forward", .3, 1, robot, this, time);
+            // Move to outside
+            robot.moveRampToPosition("left", .3, stoneLength, robot, this, time);
+            waitForYellow();
+
+            if (checkForTarget()) {
+                // It is stone #3.  Grab it.
+                targetStoneNumber = 3;
+                grabStone();
+            } else {
+                // We cound not find the stone!  Snap!
+                // Our best bet is to park under the bridge.
+                // Things appear to have gone awry and that is the least ambitious move.
+                // You are two stone lengths further outside than stone 1.
+                distanceToGo = 19 + 2.0 * stoneLength;
+                robot.moveRampToPosition("right", .4, distanceToGo, robot, this, time);
+                waitForYellow();
+            }
+        }
+    }
+
     ////////////////////////////////////  THE RUN PROGRAM ///////////////////////////////////////////////
     @Override
     public void runOpMode() {
@@ -105,60 +157,11 @@ public class SkystoneAutoJan extends LinearOpMode {
         robot.moveRampToPosition("backward", .3, 11, robot, this, time);
         //waitForYellow();
 
-
-        double stoneLength = 7.0;
-        double distanceToGo = 0.0;
-
-        // FIND THE TARGET STONE
-        // See if it is stone number 1.
-        if (checkForTarget()) {
-            // It is stone #1.  Grab it.
-            targetStoneNumber = 1;
-            grabStone();
-            waitForYellow();
-        }
-        // If target was not stone 1, see if it is stone 2.
-        if (targetStoneNumber == 0){
-          waitForYellow();
-            // Back a tiny bit
-            robot.moveRampToPosition("forward", .4, 1, robot, this, time);
-            // Move to outside
-            robot.moveRampToPosition("left", .4, stoneLength, robot, this, time);
-            waitForYellow();
-
-            if (checkForTarget()) {
-                // It is stone #2.  Grab it.
-                targetStoneNumber = 2;
-                grabStone();
-            }
-        }
-        // If we have not found the target yet, see if it is stone #3.
-        if (targetStoneNumber == 0){
-            waitForYellow();
-            // Back a tiny bit
-            robot.moveRampToPosition("forward", .3, 1, robot, this, time);
-            // Move to outside
-            robot.moveRampToPosition("left", .3, stoneLength, robot, this, time);
-            waitForYellow();
-
-            if (checkForTarget()) {
-                // It is stone #3.  Grab it.
-                targetStoneNumber = 3;
-                grabStone();
-            } else {
-                // We cound not find the stone!  Snap!
-                // Our best bet is to park under the bridge.
-                // Things appear to have gone awry and that is the least ambitious move.
-                // You are two stone lengths further outside than stone 1.
-                distanceToGo = 19 + 2.0 * stoneLength;
-                robot.moveRampToPosition("right", .4, distanceToGo, robot, this, time);
-                waitForYellow();
-            }
-        }
+        seekForStone();
 
         // SHUTTLE IT TO THE OTHER SIDE
         // Go under the bridge.
-        distanceToGo = 30 + (stoneLength * ( (double) targetStoneNumber - 1.0));
+        double distanceToGo = 30 + (stoneLength * ( (double) targetStoneNumber - 1.0));
         robot.moveRampToPosition("right", .7, distanceToGo, robot, this, time);
         waitForYellow();
 
@@ -170,7 +173,7 @@ public class SkystoneAutoJan extends LinearOpMode {
         robot.moveRampToPosition("left", .6, 30, robot, this, time);
         waitForYellow();
 
+        // approach the blocks again.
+        seekForStone();
     }
-
-
 }
