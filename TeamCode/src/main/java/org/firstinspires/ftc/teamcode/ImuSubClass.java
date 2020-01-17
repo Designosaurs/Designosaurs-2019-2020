@@ -34,6 +34,7 @@ public class ImuSubClass {
     }
 
 
+
     void turnSimp(double degrees, double speed, Hardware robot, LinearOpMode opMode) {
         ReadIMU();
         robot.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -62,8 +63,8 @@ public class ImuSubClass {
     }
 
     void turnAndCorrect(double degrees, Hardware robot, LinearOpMode opMode) {
-        turnSimp(degrees, .4, robot, opMode);
-        turnSimp(degrees, .2, robot, opMode);
+        turnSimp(degrees, .3, robot, opMode);
+        turnSimp(degrees, .1, robot, opMode);
         turnSimp(degrees, .05, robot, opMode);
     }
 
