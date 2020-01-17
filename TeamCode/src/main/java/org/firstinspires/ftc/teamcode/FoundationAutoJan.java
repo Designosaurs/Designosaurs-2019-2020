@@ -17,6 +17,8 @@ public class FoundationAutoJan extends LinearOpMode {
     final float[] values = hsvValues;
     boolean enabableStops = true; // Set to true to stop between steps for debugging.
 
+    boolean teamColorBlue = true;
+
     // Debugging aid-- wait for press of green button (a).
     //  Add these as needed so you can setp through the critical parts.
     private void waitForGreen() {
@@ -48,69 +50,79 @@ public class FoundationAutoJan extends LinearOpMode {
         telemetry.addData("init", "done");
         telemetry.update();
 
+
+        // Team color selection
+        while (!isStarted()) {
+            if (gamepad1.x) {
+                teamColorBlue = true;
+            }
+            if (gamepad1.b) {
+                teamColorBlue = false;
+            }
+            if (teamColorBlue) {
+                telemetry.addData("Team Color>", "BLUE BLUE BLUE");
+            } else {
+                telemetry.addData("Team Color>", "RED RED RED");
+            }
+            telemetry.update();
+        }
+
         waitForStart();
         imu.ReadIMU();
 
-        //robot.driveToColorEdge( Hardware.Direction.LEFT, 6.0, this);
-        //waitForGreen();
-
-        //robot.driveToProx( 10.0, 3.0, this);
-        //waitForGreen();
-
-
-
-        /*
-         while( true ) {
-
-             Color.RGBToHSV((int) (robot.sensorColor.red() * SCALE_FACTOR),
-                     (int) (robot.sensorColor.green() * SCALE_FACTOR),
-                     (int) (robot.sensorColor.blue() * SCALE_FACTOR),
-                     hsvValues);
-
-             // send the info back to driver station using telemetry function.
-             telemetry.addData("Alpha", robot.sensorColor.alpha());
-             telemetry.addData("Red  ", robot.sensorColor.red());
-             telemetry.addData("Green", robot.sensorColor.green());
-             telemetry.addData("Blue ", robot.sensorColor.blue());
-             telemetry.addData("Hue", hsvValues[0]);
-
-             telemetry.addData("Prox (cm)",
-                     String.format(Locale.US, "%.01f", robot.sensorDistance.getDistance(DistanceUnit.CM)));
-
-            telemetry.addData( "Range (In)", "%.01f", robot.sensorRange.getDistance( DistanceUnit.INCH ));
-
-            // telemetry.addData("Dist",robot.getDistance());
-            telemetry.update();
-             if (gamepad1.a) break;
-            //updateSensors();
-        }
-        while( true ) {
-            robot.stopDrive( );
-            if (!gamepad1.a) break;
-            // updateSensors();
-        }
-
-
-         */
-
 
         //robot.moveRampToPosition("right", .4,13.5,robot,this,time);
-        robot.foundationGripper.setPosition(0.7);
-        robot.moveRampToPosition("left", .4, 4, robot, this, time);
-        //waitForGreen();
-        robot.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        imu.turnSimp(-90, robot, this);
-        robot.moveRampToPosition("right", .4, 16, robot, this, time);
-        //imu.turnSimp(-90,robot,this);
-        sleep((100));
-        robot.moveRampToPosition("backward", .4, 20, robot, this, time);
-        robot.moveRampToPosition("backward", .1, 5, robot, this, time);
-        robot.foundationGripper.setPosition(0.9);
-        sleep((100));
-        robot.moveRampToPosition("forward", .4, 30, robot, this, time);
-        robot.foundationGripper.setPosition(0.7);
-        robot.moveRampToPosition("left", .4, 40, robot, this, time);
 
+        /////////////////////////////////////////////////  BLUE SIDE ///////////////////////////////////////////////////////////////////
+        if (teamColorBlue == true) {
+            // Make sure gripper is in up position
+            robot.foundationGripper.setPosition(0.7);
+
+            // Move away from the wall to avoid knocking off the capstone
+            robot.moveRampToPosition("left", .4, 4, robot, this, time);
+
+            // Turn toward and position in front of the foundation
+            //robot.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            imu.turnSimp(-90, robot, this);
+            robot.moveRampToPosition("right", .4, 16, robot, this, time);
+            sleep((100));
+            robot.moveRampToPosition("backward", .4, 20, robot, this, time);
+            robot.moveRampToPosition("backward", .1, 5, robot, this, time);
+
+            // Grab foundation and move it into the building site
+            robot.foundationGripper.setPosition(0.9);
+            sleep((100));
+            robot.moveRampToPosition("forward", .4, 30, robot, this, time);
+
+            // Let go and park under the skybridge
+            robot.foundationGripper.setPosition(0.7);
+            robot.moveRampToPosition("left", .4, 40, robot, this, time);
+        } else if (teamColorBlue == false) {
+            /////////////////////////////////////////////////  RED SIDE ///////////////////////////////////////////////////////////////////
+            // Make sure gripper is in up position
+            robot.foundationGripper.setPosition(0.7);
+
+            // Move away from the wall to avoid knocking off the capstone
+            robot.moveRampToPosition("right", .4, 4, robot, this, time);
+
+            // Turn toward and position in front of the foundation
+            //robot.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            imu.turnSimp(90, robot, this);
+            robot.moveRampToPosition("left", .4, 16, robot, this, time);
+            //imu.turnSimp(-90,robot,this);
+            sleep((100));
+            robot.moveRampToPosition("backward", .4, 20, robot, this, time);
+            robot.moveRampToPosition("backward", .1, 5, robot, this, time);
+
+            // Grab foundation and move it into the building site
+            robot.foundationGripper.setPosition(0.9);
+            sleep((100));
+            robot.moveRampToPosition("forward", .4, 30, robot, this, time);
+
+            // Let go and park under the skybridge
+            robot.foundationGripper.setPosition(0.7);
+            robot.moveRampToPosition("right", .4, 40, robot, this, time);
+        }
         //lockOn(false,false, .4);
 
         //robot.moveRampToPosition(HardwareDesignosaurs.Direction.BACKWARD, .4, 6, robot, this, time);
