@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -36,6 +37,7 @@ public class ImuSubClass {
 
     void turnSimp(double degrees, double speed, Hardware robot, LinearOpMode opMode) {
         ReadIMU();
+        robot.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         double startHeading = getHeading();
         if (startHeading > degrees) {
             robot.moveDirection(0,0,speed);
@@ -60,7 +62,7 @@ public class ImuSubClass {
         }
     }
 
-    void turnSimp(double degrees, Hardware robot, LinearOpMode opMode) {
+    void turnAndCorrect(double degrees, Hardware robot, LinearOpMode opMode) {
         turnSimp(degrees,.4, robot, opMode);
         turnSimp(degrees,.2, robot, opMode);
         turnSimp(degrees,.05, robot, opMode);

@@ -17,6 +17,8 @@ public class SkystoneAutoJan extends LinearOpMode {
     Hardware robot = new Hardware();
     ElapsedTime time = new ElapsedTime();
 
+    int targetStoneNumber = 0; // numbered from the inside (toward bridge), starting with 1.
+
     // hsvValues is an array that will hold the hue, saturation, and value information.
     float hsvValues[] = {0F, 0F, 0F};
 
@@ -41,44 +43,21 @@ public class SkystoneAutoJan extends LinearOpMode {
         }
     }
 
-
-    @Override
-    public void runOpMode() {
-        time.reset();
-        telemetry.addData("selected", "Blue");
-        telemetry.update();
-
-        telemetry.addData("init","Imu");
-        imu.init(hardwareMap);
-        telemetry.addData("init","Robot");
-        telemetry.update();
-        robot.init2(hardwareMap,0,0,0);
-        telemetry.addData("init", "done");
-        telemetry.update();
-
-        waitForStart();
-        imu.ReadIMU();
-
-        imu.ReadIMU();
-
-        robot.moveRampToPosition("left",.4,13.5,robot,this,time);
-        waitForYellow();
-
-
-        robot.moveRampToPosition("backward",.4,4,robot,this,time);
-        waitForYellow();
-
-        robot.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        imu.turnSimp(-90,robot,this);
-        waitForYellow();
-
-
-
-
-        // Creep forward to get within range of color sensor.
+    // Call this when facing the stone but a few inchest away.
+    // Return true if this is the target stone.
+    // Will leave the bot right next to the stone.
+    boolean checkForTarget( ) {
         robot.driveToProx( 8.0, 3.0, this);
         waitForYellow();
 
+        if ( robot.seesYellow( this)){
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    void grabStone( ){
         // Creep until get into the Yellow.
         robot.driveToColorEdge( Hardware.Direction.LEFT, 6.0, true ,this);
         waitForYellow();
@@ -98,16 +77,57 @@ public class SkystoneAutoJan extends LinearOpMode {
         // Ease the stone out
         robot.moveRampToPosition( "forward", .2,6,robot,this,time);
         waitForYellow();
+    }
+
+    ////////////////////////////////////  THE RUN PROGRAM ///////////////////////////////////////////////
+    @Override
+    public void runOpMode() {
+        time.reset();
+        telemetry.addData("selected", "Blue");
+        telemetry.update();
+
+        telemetry.addData("init","Imu");
+        imu.init(hardwareMap);
+        telemetry.addData("init","Robot");
+        telemetry.update();
+        robot.init2(hardwareMap,0,0,0);
+        telemetry.addData("init", "done");
+        telemetry.update();
+
+        waitForStart();
+        imu.ReadIMU();
+
+
+        // Robot starting position is with side to wall, and back facing the bridge.
+        // Wheels on the inside seam of the second tile from corner.
+
+        // Strafe away from wall.
+        robot.moveRampToPosition("left",.4,13.5,robot,this,time);
+        waitForYellow();
+
+        // Go toward bridge a tiny bit to be right in front of stone #1.
+        robot.moveRampToPosition("backward",.4,1,robot,this,time);
+        waitForYellow();
+
+        // Rotate the robot so the back (sensor / manipulator) side faces stones.
+        robot.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        imu.turnAndCorrect( -90, robot, this);
+        waitForYellow();
+
+        // Go (backward) to just a few inches fron stone #1.
+        robot.moveRampToPosition("backward",.4,1,robot,this,time);
+        waitForYellow();
+
+
+        if (checkForTarget()){
+            // It is stone #1.  Grab it.
+            targetStoneNumber = 1;
+            grabStone();
+        }
 
         // Get some clearance
         robot.moveRampToPosition( "forward", .4,10,robot,this,time);
 
-        //robot.moveRampToPosition("right", .4,13.5,robot,this,time);
-        robot.moveRampToPosition("forward", .4,24,robot,this,time);
-        waitForYellow();
-        robot.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        imu.turnSimp(90,robot,this);
-        //lockOn(false,false, .4);
 
         //robot.moveRampToPosition(HardwareDesignosaurs.Direction.BACKWARD, .4, 6, robot, this, time);
         //robot.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
