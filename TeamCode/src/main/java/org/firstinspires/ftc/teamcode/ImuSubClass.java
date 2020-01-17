@@ -62,13 +62,29 @@ public class ImuSubClass {
         }
     }
 
+
+    // If something is already close to the right heading, you can call this to
+    // make a final adjustment.  It will return right away if no correction
+    // is needed.
+    void correctHeading( double degrees, Hardware robot, LinearOpMode opMode){
+        double degError = Math.abs( getHeading() - degrees);
+        // If less than 2 degrees off, return without doing anything.
+        if ( degError < 2.0){
+            return;
+        }
+        turnSimp(degrees, .05, robot, opMode);
+    }
+
+    // This really only works on 90 degree turns!
+    // The first turn is well short of the mark, and the last little bit is
+    // to correct.
     void turnAndCorrect(double degrees, Hardware robot, LinearOpMode opMode) {
         if (degrees >= 0) {
-            turnSimp(degrees - 15, .3, robot, opMode);
+            turnSimp(degrees - 30, .4, robot, opMode);
         } else {
-            turnSimp(degrees + 15, .3, robot, opMode);
+            turnSimp(degrees + 30, .4, robot, opMode);
         }
-        turnSimp(degrees, .1, robot, opMode);
+        // turnSimp(degrees, .1, robot, opMode);
         turnSimp(degrees, .05, robot, opMode);
     }
 
