@@ -27,8 +27,8 @@ public class HardwareDesignosaursJan {
     // Define Servos
     public Servo mainGripper        = null;
     public Servo foundationGripper  = null;
-    public Servo leftGripper        = null;
-    public Servo rightGripper       = null;
+    public Servo leftAutoManipulator = null;
+    public Servo rightAutoManipulator = null;
     public Servo capstoneGripper    = null;
 
     public Servo mainGripperLeft    = null;
@@ -59,7 +59,7 @@ public class HardwareDesignosaursJan {
     }
     public boolean flip = false;
     public double accelPerSec = .8;
-    public double decelPGain = encoder_ticks_per_inch / 45;
+    public double decelPGain = INCHES_PER_ENCODER_TICK / 45;
     public double minSpeed = .2;
     public double sideBias = Math.sqrt(2);
 
@@ -67,7 +67,7 @@ public class HardwareDesignosaursJan {
 
     public static final double wheel_diameter = 4;   // inches
     public static final double encoder_ticks_per_revolution = 537.6;
-    public static final double encoder_ticks_per_inch =
+    public static final double INCHES_PER_ENCODER_TICK =
                     (wheel_diameter * Math.PI)/
                             encoder_ticks_per_revolution; // used in encoder drive
 
@@ -97,8 +97,8 @@ public class HardwareDesignosaursJan {
         mainGripperRight = hwMap.get(Servo.class, "right_manipulator");
         mainGripperLeft = hwMap.get(Servo.class, "left_manipulator");
         foundationGripper = hwMap.get(Servo.class, "foundation_manipulator");
-        leftGripper = hwMap.get(Servo.class, "left_auto_manipulator");
-        rightGripper = hwMap.get(Servo.class, "right_auto_manipulator");
+        leftAutoManipulator = hwMap.get(Servo.class, "leftAutoManipulator");
+        rightAutoManipulator = hwMap.get(Servo.class, "right_auto_manipulator");
         capstoneGripper = hwMap.get(Servo.class, "capstone_manipulator");
 
         // Initialize Sensors
@@ -144,10 +144,23 @@ public class HardwareDesignosaursJan {
         mainGripperLeft.setPosition(0.8);  // Open
         mainGripperRight.setPosition(.25);
         foundationGripper.setPosition(0.7);
-        leftGripper.setPosition(0);
-        rightGripper.setPosition(1);
+
+        rightAutoManipulator.setPosition(1);
         capstoneGripper.setPosition(0);
     }
+
+
+    public void resetLeftAutoManipulator (  ){
+        leftAutoManipulator.setPosition(0);
+    }
+
+    public void setLeftAutoManipulator (  ){
+        leftAutoManipulator.setPosition(1);
+    }
+
+
+
+
 
     public void init2(HardwareMap hwMap, int xPos, int yPos, int thetaPos) {
         init2(hwMap);
@@ -177,7 +190,7 @@ public class HardwareDesignosaursJan {
 
     public void moveRampToPosition(String direction, double maxSpeed, double distance, HardwareDesignosaursJan Robot, LinearOpMode opMode, ElapsedTime time) {
         // this function moves the specified number of inches in the given direction using acceleration ramps along with the built-in PIDs
-        double encDist = distance / encoder_ticks_per_inch; // calculate distance in encoder counts
+        double encDist = distance / INCHES_PER_ENCODER_TICK; // calculate distance in encoder counts
 
         Robot.frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER); // reset all encoders
         Robot.frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -233,7 +246,7 @@ public class HardwareDesignosaursJan {
                 rampUpSpeed = maxSpeed;
             }
             // calculate rampdown, remaining distance / 10, no less than min var
-            rampDownSpeed = Math.max(Math.abs(Math.abs(Robot.frontRight.getCurrentPosition()*encoder_ticks_per_inch) - distance) * 1/10, minSpeed);
+            rampDownSpeed = Math.max(Math.abs(Math.abs(Robot.frontRight.getCurrentPosition()* INCHES_PER_ENCODER_TICK) - distance) * 1/10, minSpeed);
             // lock ramp down at min var
             if (rampDownLock) {
                 rampDownSpeed = minSpeed;
@@ -340,6 +353,16 @@ public class HardwareDesignosaursJan {
 
     }
 
+    boolean seesYellow( LinearOpMode opMode ){
+        int red = 0;
+        red = sensorColor.red();
+        opMode.telemetry.addData("Red", red );
+        if ( red > 50 ) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 
 
 
@@ -349,36 +372,37 @@ public class HardwareDesignosaursJan {
     // Return true with the robot stopped if we found the edge.
     // Return false with the robot stopped if we went the maxDistance without
     // seeing an edge.
-    boolean driveToColorEdge( Direction direction, double maxDistance, LinearOpMode opMode ){
-        int red = 0;
+    boolean driveToColorEdge( Direction direction, double maxDistance, boolean lookForYellow, LinearOpMode opMode ){
+
         double encDist = 0;
         int encReading = 0;
-
-
         setMode( DcMotor.RunMode.STOP_AND_RESET_ENCODER); //Reset all encoders.
-        opMode.telemetry.addData("fl", frontLeft.getCurrentPosition());
-        opMode.telemetry.update();
-        delaySecs( 10.0 );
 
         // Run until we see that edge, or maxDistane, whichever is first.
         do {
             runDirection(0.05, direction, true);
 
             opMode.telemetry.addData("Doing", "driveToProx");
-            opMode.telemetry.addData("tpi", encoder_ticks_per_inch );
-
-
             encReading = frontLeft.getCurrentPosition();
-            opMode.telemetry.addData("fl", encReading );
-
-            //encDist = Math.abs( ((double) encReading) / encoder_ticks_per_inch );
-            encDist = ((double) encReading) / encoder_ticks_per_inch ;
+            opMode.telemetry.addData("fl enc", encReading );
+            encDist = Math.abs( ((double) encReading) * INCHES_PER_ENCODER_TICK);
             opMode.telemetry.addData("Dist ",
                     String.format(Locale.US, "%.01f", encDist ));
 
-            encDist = Math.abs( ((double) encReading) * encoder_ticks_per_inch );
-            opMode.telemetry.addData("Dist ",
-                    String.format(Locale.US, "%.01f", encDist ));
+            // If we are looking for yellow, stop when we see it.
+            if (lookForYellow){
+                if ( seesYellow( opMode)) {
+                    stopDrive();
+                    opMode.telemetry.update();
+                    return true;
+                }
+            } else {
+                if ( !seesYellow( opMode)) {
+                    stopDrive();
+                    opMode.telemetry.update();
+                    return true;
+                }
+            }
             opMode.telemetry.update();
         } while ( encDist < maxDistance );
         stopDrive();
@@ -488,8 +512,8 @@ public class HardwareDesignosaursJan {
         // Initialize Servos
         mainGripper = hwMap.get(Servo.class, "main_manipulator");
         foundationGripper = hwMap.get(Servo.class, "foundation_manipulator");
-        leftGripper = hwMap.get(Servo.class, "left_auto_manipulator");
-        rightGripper = hwMap.get(Servo.class, "right_auto_manipulator");
+        leftAutoManipulator = hwMap.get(Servo.class, "leftAutoManipulator");
+        rightAutoManipulator = hwMap.get(Servo.class, "right_auto_manipulator");
         capstoneGripper = hwMap.get(Servo.class, "capstone_manipulator");
 
 
@@ -525,8 +549,8 @@ public class HardwareDesignosaursJan {
 
         mainGripper.setPosition(1);
         foundationGripper.setPosition(0.7);
-        leftGripper.setPosition(0);
-        rightGripper.setPosition(1);
+        leftAutoManipulator.setPosition(0);
+        rightAutoManipulator.setPosition(1);
         capstoneGripper.setPosition(0);
 
     }

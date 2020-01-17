@@ -61,13 +61,17 @@ public class SkystoneAutoJan extends LinearOpMode {
         waitForStart();
         imu.ReadIMU();
 
-        robot.driveToColorEdge( HardwareDesignosaursJan.Direction.LEFT, 6.0, this);
+        // Creep forward to get within range of color sensor.
+        robot.driveToProx( 8.0, 3.0, this);
         waitForGreen();
-
-        robot.driveToProx( 10.0, 3.0, this);
+        // Creep until get into the Yellow.
+        robot.driveToColorEdge( HardwareDesignosaursJan.Direction.LEFT, 6.0, false ,this);
         waitForGreen();
-
-
+        // Back up to get the grabber centered.
+        robot.moveRampToPosition( HardwareDesignosaursJan.Direction.LEFT, .4,2.2,robot,this,time);
+        waitForGreen();
+        robot.setLeftAutoManipulator();
+        waitForGreen();
 
          while( true ) {
 
@@ -110,14 +114,14 @@ public class SkystoneAutoJan extends LinearOpMode {
         //robot.moveRampToPosition(HardwareDesignosaurs.Direction.BACKWARD, .4, 6, robot, this, time);
         //robot.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        //robot.leftGripper.setPosition(0);
+        //robot.leftAutoManipulator.setPosition(0);
         //robot.wait(1,this,time);
 
         //robot.moveRampToPosition(HardwareDesignosaurs.Direction.LEFT, .6, 50,robot,this,time);
         //robot.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         //lockOn();
         //robot.moveRampToPosition(HardwareDesignosaurs.Direction.RIGHT,.6,50,robot,this,time);
-        //robot.leftGripper.setPosition(0);
+        //robot.leftAutoManipulator.setPosition(0);
         //robot.wait(1,this,time);
         //robot.moveRampToPosition(HardwareDesignosaurs.Direction.LEFT,.6,10,robot,this,time);
 

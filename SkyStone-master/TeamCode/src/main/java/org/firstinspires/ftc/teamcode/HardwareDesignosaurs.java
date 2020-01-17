@@ -106,7 +106,7 @@ public class HardwareDesignosaurs {
         // Initialize Servos
         mainGripper = hwMap.get(Servo.class, "main_manipulator");
         foundationGripper = hwMap.get(Servo.class, "foundation_manipulator");
-        leftGripper = hwMap.get(Servo.class, "left_auto_manipulator");
+        leftGripper = hwMap.get(Servo.class, "leftAutoManipulator");
         rightGripper = hwMap.get(Servo.class, "right_auto_manipulator");
         capstoneGripper = hwMap.get(Servo.class, "capstone_manipulator");
 
@@ -167,7 +167,7 @@ public class HardwareDesignosaurs {
         mainGripperRight = hwMap.get(Servo.class, "right_manipulator");
         mainGripperLeft = hwMap.get(Servo.class, "left_manipulator");
         foundationGripper = hwMap.get(Servo.class, "foundation_manipulator");
-        leftGripper = hwMap.get(Servo.class, "left_auto_manipulator");
+        leftGripper = hwMap.get(Servo.class, "leftAutoManipulator");
         rightGripper = hwMap.get(Servo.class, "right_auto_manipulator");
         capstoneGripper = hwMap.get(Servo.class, "capstone_manipulator");
 
