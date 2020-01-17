@@ -14,7 +14,7 @@ public class SkystoneAutoJan extends LinearOpMode {
     int targetStoneNumber = 0; // numbered from the inside (toward bridge), starting with 1.
 
 
-    boolean enabableStops = true; // Set to true to stop between steps for debugging.
+    boolean enabableStops = false; // Set to true to stop between steps for debugging.
 
     // Debugging aid-- wait for press of green button (a).
     //  Add these as needed so you can setp through the critical parts.
@@ -48,7 +48,7 @@ public class SkystoneAutoJan extends LinearOpMode {
         //waitForYellow();
 
         // Strafe to where we came from to get the grabber centered.
-        robot.moveRampToPosition("right", .3, 8, robot, this, time);
+        robot.moveRampToPosition("right", .2, 7, robot, this, time);
         //waitForYellow();
 
         // Backward (toward stone)  to be ready to grab that stone.
@@ -57,10 +57,11 @@ public class SkystoneAutoJan extends LinearOpMode {
 
         // Deploy manipulator
         robot.deployRightAutoManipulator();
-        waitForYellow();
+        sleep(500);
+        //waitForYellow();
 
         // Ease the stone out
-        robot.moveRampToPosition("forward", .2, 8, robot, this, time);
+        robot.moveRampToPosition("forward", .6, 14, robot, this, time);
         waitForYellow();
     }
 
@@ -88,7 +89,7 @@ public class SkystoneAutoJan extends LinearOpMode {
 
         // POSITION IN FRONT OF FIRST STONE
         // Strafe away from wall.
-        robot.moveRampToPosition("left", .6, 13.5, robot, this, time);
+        robot.moveRampToPosition("left", .8, 13.5, robot, this, time);
         //waitForYellow();
 
         // Go toward bridge a tiny bit to be right in front of stone #1.
@@ -158,14 +159,15 @@ public class SkystoneAutoJan extends LinearOpMode {
         // SHUTTLE IT TO THE OTHER SIDE
         // Go under the bridge.
         distanceToGo = 30 + (stoneLength * ( (double) targetStoneNumber - 1.0));
-        robot.moveRampToPosition("right", .4, distanceToGo, robot, this, time);
+        robot.moveRampToPosition("right", .7, distanceToGo, robot, this, time);
         waitForYellow();
 
         // Drop the stone and park under the bridge.
         robot.resetLeftAutoManipulator();
         //distanceToGo = 36 + 2.0 * stoneLength * ( (double) targetStoneNumber - 1.0)
         distanceToGo = 9;
-        robot.moveRampToPosition("left", .4, distanceToGo, robot, this, time);
+        robot.moveRampToPosition("left", .6, distanceToGo, robot, this, time);
+        robot.moveRampToPosition("left", .6, 30, robot, this, time);
         waitForYellow();
 
     }
