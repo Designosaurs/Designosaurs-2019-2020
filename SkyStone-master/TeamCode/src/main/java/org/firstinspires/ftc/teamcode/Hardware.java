@@ -360,6 +360,9 @@ public class Hardware {
         backRight.setDirection(DcMotor.Direction.REVERSE);
         backLeft.setDirection(DcMotor.Direction.FORWARD);
 
+        opMode.telemetry.addData("RTP Status", "Done");
+        opMode.telemetry.update();
+
     }
 
     // This does not actually work!

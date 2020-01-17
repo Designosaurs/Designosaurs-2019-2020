@@ -19,12 +19,6 @@ public class SkystoneAutoJan extends LinearOpMode {
 
     int targetStoneNumber = 0; // numbered from the inside (toward bridge), starting with 1.
 
-    // hsvValues is an array that will hold the hue, saturation, and value information.
-    float hsvValues[] = {0F, 0F, 0F};
-
-    // values is a reference to the hsvValues array.
-    final float values[] = hsvValues;
-    final double SCALE_FACTOR = 255;
 
     boolean enabableStops = true; // Set to true to stop between steps for debugging.
     // Debugging aid-- wait for press of green button (a).
@@ -47,7 +41,7 @@ public class SkystoneAutoJan extends LinearOpMode {
     // Return true if this is the target stone.
     // Will leave the bot right next to the stone.
     boolean checkForTarget( ) {
-        robot.driveToProx( 8.0, 3.0, this);
+        robot.driveToProx( 8.0, 6.0, this);
         waitForYellow();
 
         if ( robot.seesYellow( this)){
@@ -63,7 +57,7 @@ public class SkystoneAutoJan extends LinearOpMode {
         waitForYellow();
 
         // Strafe to where we came from to get the grabber centered.
-        robot.moveRampToPosition( "right", .4,10.5,robot,this,time);
+        robot.moveRampToPosition( "right", .3,9.5,robot,this,time);
         waitForYellow();
 
         // Backward (toward stone)  to be ready to grab that stone.
@@ -75,7 +69,7 @@ public class SkystoneAutoJan extends LinearOpMode {
         waitForYellow();
 
         // Ease the stone out
-        robot.moveRampToPosition( "forward", .2,6,robot,this,time);
+        robot.moveRampToPosition( "forward", .2,8,robot,this,time);
         waitForYellow();
     }
 
@@ -106,7 +100,7 @@ public class SkystoneAutoJan extends LinearOpMode {
         waitForYellow();
 
         // Go toward bridge a tiny bit to be right in front of stone #1.
-        robot.moveRampToPosition("backward",.4,1,robot,this,time);
+        robot.moveRampToPosition("backward",.4,3,robot,this,time);
         waitForYellow();
 
         // Rotate the robot so the back (sensor / manipulator) side faces stones.
@@ -115,7 +109,7 @@ public class SkystoneAutoJan extends LinearOpMode {
         waitForYellow();
 
         // Go (backward) to just a few inches fron stone #1.
-        robot.moveRampToPosition("backward",.4,1,robot,this,time);
+        robot.moveRampToPosition("backward",.3,11,robot,this,time);
         waitForYellow();
 
 
@@ -126,7 +120,7 @@ public class SkystoneAutoJan extends LinearOpMode {
         }
 
         // Get some clearance
-        robot.moveRampToPosition( "forward", .4,10,robot,this,time);
+        // robot.moveRampToPosition( "forward", .4,10,robot,this,time);
 
 
         //robot.moveRampToPosition(HardwareDesignosaurs.Direction.BACKWARD, .4, 6, robot, this, time);
