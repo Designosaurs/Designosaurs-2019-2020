@@ -127,6 +127,14 @@ public class Hardware {
         backLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
+
+        // Motors should brake at zero power
+        frontLeft.setZeroPowerBehavior( DcMotor.ZeroPowerBehavior.BRAKE);
+        frontRight.setZeroPowerBehavior( DcMotor.ZeroPowerBehavior.BRAKE);
+        backLeft.setZeroPowerBehavior( DcMotor.ZeroPowerBehavior.BRAKE);
+        backRight.setZeroPowerBehavior( DcMotor.ZeroPowerBehavior.BRAKE);
+        liftMotor.setZeroPowerBehavior( DcMotor.ZeroPowerBehavior.BRAKE);
+
         // Set Servo Positions
         mainGripperLeft.setPosition(0.8);  // Open
         mainGripperRight.setPosition(.25);
@@ -158,7 +166,7 @@ public class Hardware {
         int red = 0;
         red = sensorColor.red();
         opMode.telemetry.addData("Red", red );
-        if ( red > 50 ) {
+        if ( red > 55 ) {
             return true;
         } else {
             return false;
@@ -351,13 +359,14 @@ public class Hardware {
         frontLeft.setDirection(DcMotor.Direction.FORWARD);
         backRight.setDirection(DcMotor.Direction.REVERSE);
         backLeft.setDirection(DcMotor.Direction.FORWARD);
+
     }
 
-
-    public void moveRampToPosition(Direction direction, double maxSpeed, double distance, Hardware Robot, LinearOpMode opMode, ElapsedTime time) {
-        direction = maybeFlip(direction);
-        moveRampToPosition(direction.toString().toLowerCase(), maxSpeed, distance, Robot, opMode, time);
-    }
+    // This does not actually work!
+    // public void moveRampToPosition(Direction direction, double maxSpeed, double distance, Hardware Robot, LinearOpMode opMode, ElapsedTime time) {
+    //    direction = maybeFlip(direction);
+    //    moveRampToPosition(direction.toString().toLowerCase(), maxSpeed, distance, Robot, opMode, time);
+    //}
 
     void moveDirection(double north, double west, double rotate, Hardware robot) {
         robot.frontLeft.setPower(-north + west + rotate);

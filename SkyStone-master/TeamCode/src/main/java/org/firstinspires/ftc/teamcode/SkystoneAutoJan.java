@@ -37,7 +37,7 @@ public class SkystoneAutoJan extends LinearOpMode {
         while( true ) {
             robot.stopDrive( );
             if (!gamepad1.y) break;
-           // updateSensors();
+            // updateSensors();
         }
     }
 
@@ -59,6 +59,22 @@ public class SkystoneAutoJan extends LinearOpMode {
         waitForStart();
         imu.ReadIMU();
 
+        imu.ReadIMU();
+
+        robot.moveRampToPosition("left",.4,13.5,robot,this,time);
+        waitForYellow();
+
+
+        robot.moveRampToPosition("backward",.4,4,robot,this,time);
+        waitForYellow();
+
+        robot.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        imu.turnSimp(-90,robot,this);
+        waitForYellow();
+
+
+
+
         // Creep forward to get within range of color sensor.
         robot.driveToProx( 8.0, 3.0, this);
         waitForYellow();
@@ -67,49 +83,24 @@ public class SkystoneAutoJan extends LinearOpMode {
         robot.driveToColorEdge( Hardware.Direction.LEFT, 6.0, true ,this);
         waitForYellow();
 
-        // Back up to get the grabber centered.
-        robot.moveRampToPosition( Hardware.Direction.RIGHT, .4,8,robot,this,time);
+        // Strafe to where we came from to get the grabber centered.
+        robot.moveRampToPosition( "right", .4,10.5,robot,this,time);
         waitForYellow();
 
         // Backward (toward stone)  to be ready to grab that stone.
-        robot.moveRampToPosition( Hardware.Direction.BACKWARD, .4,1.5,robot,this,time);
+        robot.moveRampToPosition( "backward", .4,1.0,robot,this,time);
         waitForYellow();
-
 
         // Deploy manipulator
         robot.deployLeftAutoManipulator();
         waitForYellow();
 
-         while( true ) {
+        // Ease the stone out
+        robot.moveRampToPosition( "forward", .2,6,robot,this,time);
+        waitForYellow();
 
-             Color.RGBToHSV((int) (robot.sensorColor.red() * SCALE_FACTOR),
-                     (int) (robot.sensorColor.green() * SCALE_FACTOR),
-                     (int) (robot.sensorColor.blue() * SCALE_FACTOR),
-                     hsvValues);
-
-             // send the info back to driver station using telemetry function.
-             telemetry.addData("Alpha", robot.sensorColor.alpha());
-             telemetry.addData("Red  ", robot.sensorColor.red());
-             telemetry.addData("Green", robot.sensorColor.green());
-             telemetry.addData("Blue ", robot.sensorColor.blue());
-             telemetry.addData("Hue", hsvValues[0]);
-
-             telemetry.addData("Prox (cm)",
-                     String.format(Locale.US, "%.01f", robot.sensorDistance.getDistance(DistanceUnit.CM)));
-
-            telemetry.addData( "Range (In)", "%.01f", robot.sensorRange.getDistance( DistanceUnit.INCH ));
-
-            // telemetry.addData("Dist",robot.getDistance());
-            telemetry.update();
-             if (gamepad1.a) break;
-            //updateSensors();
-        }
-        while( true ) {
-            robot.stopDrive( );
-            if (!gamepad1.a) break;
-            // updateSensors();
-        }
-
+        // Get some clearance
+        robot.moveRampToPosition( "forward", .4,10,robot,this,time);
 
         //robot.moveRampToPosition("right", .4,13.5,robot,this,time);
         robot.moveRampToPosition("forward", .4,24,robot,this,time);

@@ -7,8 +7,8 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import java.util.concurrent.TimeUnit;
 
-@TeleOp(name="Jan Competition", group="!TeleOp")
-public class TeleOpJan extends OpMode {
+@TeleOp(name="Teleop Competition", group="!TeleOp")
+public class TeleOpCompetion extends OpMode {
 
     // variables
     boolean isLowGear = false;
