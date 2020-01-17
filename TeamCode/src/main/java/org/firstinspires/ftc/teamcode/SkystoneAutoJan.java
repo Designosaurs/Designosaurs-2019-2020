@@ -14,7 +14,7 @@ public class SkystoneAutoJan extends LinearOpMode {
     int targetStoneNumber = 0; // numbered from the inside (toward bridge), starting with 1.
 
 
-    boolean enabableStops = true; // Set to true to stop between steps for debugging.
+    boolean enabableStops = false; // Set to true to stop between steps for debugging.
 
     // Debugging aid-- wait for press of green button (a).
     //  Add these as needed so you can setp through the critical parts.
