@@ -54,7 +54,6 @@ public class Hardware {
 
     }
 
-
     //////////////////////////////////////  INITIALIZATION ///////////////////////////////////////
     public void init2(HardwareMap hwMap) {
         // Initialize Motors

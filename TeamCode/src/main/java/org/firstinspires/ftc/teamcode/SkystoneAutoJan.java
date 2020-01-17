@@ -86,6 +86,7 @@ public class SkystoneAutoJan extends LinearOpMode {
         // Robot starting position is with side to wall, and back facing the bridge.
         // Wheels on the inside seam of the second tile from corner.
 
+        // POSITION IN FRONT OF FIRST STONE
         // Strafe away from wall.
         robot.moveRampToPosition("left", .4, 13.5, robot, this, time);
         waitForYellow();
@@ -99,34 +100,76 @@ public class SkystoneAutoJan extends LinearOpMode {
         imu.turnAndCorrect(-90, robot, this);
         waitForYellow();
 
-        // Go (backward) to just a few inches fron stone #1.
+        // Go toward the stone (backward) to just a few inches fron stone #1.
         robot.moveRampToPosition("backward", .3, 11, robot, this, time);
         waitForYellow();
 
 
+        double stoneLength = 8.0;
+        double distanceToGo = 0.0;
+
+        // FIND THE TARGET STONE
+        // See if it is stone number 1.
         if (checkForTarget()) {
             // It is stone #1.  Grab it.
             targetStoneNumber = 1;
             grabStone();
         }
+        // If target was not stone 1, see if it is stone 2.
+        if (targetStoneNumber != 0){
+            telemetry.addData("Target Stone", targetStoneNumber);
+            telemetry.addData("Checking", "Stone 2");
+            telemetry.update();
+            waitForYellow();
+            // Back a tiny bit
+            robot.moveRampToPosition("forward", .4, 1, robot, this, time);
+            // Move to outside
+            robot.moveRampToPosition("left", .4, stoneLength, robot, this, time);
+            waitForYellow();
 
-        // Get some clearance
-        // robot.moveRampToPosition( "forward", .4,10,robot,this,time);
+            if (checkForTarget()) {
+                // It is stone #2.  Grab it.
+                targetStoneNumber = 2;
+                grabStone();
+            }
+        }
+        // If we have not found the target yet, see if it is stone #3.
+        if (targetStoneNumber != 0){
+            telemetry.addData("Target Stone", targetStoneNumber);
+            telemetry.addData("Checking", "Stone 3");
+            telemetry.update();
+            waitForYellow();
+            // Back a tiny bit
+            robot.moveRampToPosition("forward", .4, 1, robot, this, time);
+            // Move to outside
+            robot.moveRampToPosition("left", .4, stoneLength, robot, this, time);
+            waitForYellow();
 
+            if (checkForTarget()) {
+                // It is stone #2.  Grab it.
+                targetStoneNumber = 2;
+                grabStone();
+            }
+        } else {
+            // We cound not find the stone!  Snap!
+            // Our best bet is to park under the bridge.
+            // Things appear to have gone awry and that is the least ambitious move.
+            distanceToGo = 19 + 2.0 * stoneLength;
+            robot.moveRampToPosition("right", .4, distanceToGo, robot, this, time);
+            waitForYellow();
+        }
 
-        //robot.moveRampToPosition(Hardware.Direction.BACKWARD, .4, 6, robot, this, time);
-        //robot.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        // SHUTTLE IT TO THE OTHER SIDE
+        // Go under the bridge
+        distanceToGo = 36 + 2.0 * stoneLength * ( (double) targetStoneNumber - 1.0);
+        robot.moveRampToPosition("right", .4, distanceToGo, robot, this, time);
+        waitForYellow();
 
-        //robot.leftAutoManipulator.setPosition(0);
-        //robot.wait(1,this,time);
-
-        //robot.moveRampToPosition(Hardware.Direction.LEFT, .6, 50,robot,this,time);
-        //robot.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        //lockOn();
-        //robot.moveRampToPosition(Hardware.Direction.RIGHT,.6,50,robot,this,time);
-        //robot.leftAutoManipulator.setPosition(0);
-        //robot.wait(1,this,time);
-        //robot.moveRampToPosition(Hardware.Direction.LEFT,.6,10,robot,this,time);
+        robot.resetLeftAutoManipulator();
+        //distanceToGo = 36 + 2.0 * stoneLength * ( (double) targetStoneNumber - 1.0)
+        distanceToGo = 12;
+        robot.moveRampToPosition("left", .4, distanceToGo, robot, this, time);
+        waitForYellow();
 
     }
 
