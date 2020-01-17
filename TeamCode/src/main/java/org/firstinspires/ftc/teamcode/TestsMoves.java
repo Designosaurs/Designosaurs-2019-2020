@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 @Autonomous(name = "Test Moves", group = "!Auto")
 public class TestsMoves extends LinearOpMode {
-    //ImuSubClass imu = new ImuSubClass();
+    ImuSubClass imu = new ImuSubClass();
     Hardware robot = new Hardware();
 
     ElapsedTime time = new ElapsedTime();
@@ -34,6 +34,14 @@ public class TestsMoves extends LinearOpMode {
     public void runOpMode() {
         time.reset();
         robot.init2(hardwareMap, 0, 0, 0);
+        imu.init(hardwareMap);
+
+        waitForStart();
+        imu.ReadIMU();
+
+        // Rotate the robot so the back (sensor / manipulator) side faces stones.
+        imu.turnAndCorrect(-90, robot, this);
+        waitForYellow();
 
         waitForStart();
         robot.moveRampToPosition("forward", .4, 24, robot, this, time);

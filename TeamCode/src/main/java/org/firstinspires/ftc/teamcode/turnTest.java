@@ -17,6 +17,6 @@ public class turnTest extends LinearOpMode {
 
         waitForStart();
 
-        imu.turnSimp(90, robot, this);
+        imu.turnAndCorrect(90, robot, this);
     }
 }

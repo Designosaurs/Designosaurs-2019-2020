@@ -7,14 +7,13 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 @Autonomous(name = "Jan Skystone Auto", group = "!Auto")
 public class SkystoneAutoJan extends LinearOpMode {
-    final double SCALE_FACTOR = 255;
     ImuSubClass imu = new ImuSubClass();
     Hardware robot = new Hardware();
     ElapsedTime time = new ElapsedTime();
-    // hsvValues is an array that will hold the hue, saturation, and value information.
-    float[] hsvValues = {0F, 0F, 0F};
-    // values is a reference to the hsvValues array.
-    final float[] values = hsvValues;
+
+    int targetStoneNumber = 0; // numbered from the inside (toward bridge), starting with 1.
+
+
     boolean enabableStops = true; // Set to true to stop between steps for debugging.
 
     // Debugging aid-- wait for press of green button (a).
@@ -33,7 +32,39 @@ public class SkystoneAutoJan extends LinearOpMode {
         }
     }
 
+    // Call this when facing the stone but a few inchest away.
+    // Return true if this is the target stone.
+    // Will leave the bot right next to the stone.
+    boolean checkForTarget() {
+        robot.driveToProx(8.0, 6.0, this);
+        waitForYellow();
 
+        return !robot.seesYellow(this);
+    }
+
+    void grabStone() {
+        // Creep until get into the Yellow.
+        robot.driveToColorEdge(Hardware.Direction.LEFT, 6.0, true, this);
+        waitForYellow();
+
+        // Strafe to where we came from to get the grabber centered.
+        robot.moveRampToPosition("right", .3, 9.5, robot, this, time);
+        waitForYellow();
+
+        // Backward (toward stone)  to be ready to grab that stone.
+        robot.moveRampToPosition("backward", .4, 1.0, robot, this, time);
+        waitForYellow();
+
+        // Deploy manipulator
+        robot.deployLeftAutoManipulator();
+        waitForYellow();
+
+        // Ease the stone out
+        robot.moveRampToPosition("forward", .2, 8, robot, this, time);
+        waitForYellow();
+    }
+
+    ////////////////////////////////////  THE RUN PROGRAM ///////////////////////////////////////////////
     @Override
     public void runOpMode() {
         time.reset();
@@ -51,53 +82,37 @@ public class SkystoneAutoJan extends LinearOpMode {
         waitForStart();
         imu.ReadIMU();
 
-        imu.ReadIMU();
 
+        // Robot starting position is with side to wall, and back facing the bridge.
+        // Wheels on the inside seam of the second tile from corner.
+
+        // Strafe away from wall.
         robot.moveRampToPosition("left", .4, 13.5, robot, this, time);
         waitForYellow();
 
-
-        robot.moveRampToPosition("backward", .4, 4, robot, this, time);
+        // Go toward bridge a tiny bit to be right in front of stone #1.
+        robot.moveRampToPosition("backward", .4, 3, robot, this, time);
         waitForYellow();
 
+        // Rotate the robot so the back (sensor / manipulator) side faces stones.
         robot.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        imu.turnSimp(-90, robot, this);
+        imu.turnAndCorrect(-90, robot, this);
+        waitForYellow();
+
+        // Go (backward) to just a few inches fron stone #1.
+        robot.moveRampToPosition("backward", .3, 11, robot, this, time);
         waitForYellow();
 
 
-        // Creep forward to get within range of color sensor.
-        robot.driveToProx(8.0, 3.0, this);
-        waitForYellow();
-
-        // Creep until get into the Yellow.
-        robot.driveToColorEdge(Hardware.Direction.LEFT, 6.0, true, this);
-        waitForYellow();
-
-        // Strafe to where we came from to get the grabber centered.
-        robot.moveRampToPosition("right", .4, 10.5, robot, this, time);
-        waitForYellow();
-
-        // Backward (toward stone)  to be ready to grab that stone.
-        robot.moveRampToPosition("backward", .4, 1.0, robot, this, time);
-        waitForYellow();
-
-        // Deploy manipulator
-        robot.deployLeftAutoManipulator();
-        waitForYellow();
-
-        // Ease the stone out
-        robot.moveRampToPosition("forward", .2, 6, robot, this, time);
-        waitForYellow();
+        if (checkForTarget()) {
+            // It is stone #1.  Grab it.
+            targetStoneNumber = 1;
+            grabStone();
+        }
 
         // Get some clearance
-        robot.moveRampToPosition("forward", .4, 10, robot, this, time);
+        // robot.moveRampToPosition( "forward", .4,10,robot,this,time);
 
-        //robot.moveRampToPosition("right", .4,13.5,robot,this,time);
-        robot.moveRampToPosition("forward", .4, 24, robot, this, time);
-        waitForYellow();
-        robot.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        imu.turnSimp(90, robot, this);
-        //lockOn(false,false, .4);
 
         //robot.moveRampToPosition(Hardware.Direction.BACKWARD, .4, 6, robot, this, time);
         //robot.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
