@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 @Autonomous(name="90* Turn test", group="Z")
 public class turnTest extends LinearOpMode {
-    HardwareDesignosaursJan robot = new HardwareDesignosaursJan();
+    Hardware robot = new Hardware();
     ImuSubClass imu = new ImuSubClass();
     ElapsedTime time = new ElapsedTime();
 

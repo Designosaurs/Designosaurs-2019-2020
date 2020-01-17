@@ -14,7 +14,7 @@ import java.util.Locale;
 @Autonomous(name = "Jan Skystone Auto", group = "!Auto")
 public class SkystoneAutoJan extends LinearOpMode {
     ImuSubClass imu = new ImuSubClass();
-    HardwareDesignosaursJan robot = new HardwareDesignosaursJan();
+    Hardware robot = new Hardware();
     ElapsedTime time = new ElapsedTime();
 
     // hsvValues is an array that will hold the hue, saturation, and value information.
@@ -24,21 +24,19 @@ public class SkystoneAutoJan extends LinearOpMode {
     final float values[] = hsvValues;
     final double SCALE_FACTOR = 255;
 
-
-
     boolean enabableStops = true; // Set to true to stop between steps for debugging.
     // Debugging aid-- wait for press of green button (a).
     //  Add these as needed so you can setp through the critical parts.
-    private void waitForGreen()  {
+    private void waitForYellow()  {
         if (!enabableStops) return;
         while( true ) {
             robot.stopDrive( );
-            if (gamepad1.a) break;
+            if (gamepad1.y) break;
             //updateSensors();
         }
         while( true ) {
             robot.stopDrive( );
-            if (!gamepad1.a) break;
+            if (!gamepad1.y) break;
            // updateSensors();
         }
     }
@@ -63,15 +61,24 @@ public class SkystoneAutoJan extends LinearOpMode {
 
         // Creep forward to get within range of color sensor.
         robot.driveToProx( 8.0, 3.0, this);
-        waitForGreen();
+        waitForYellow();
+
         // Creep until get into the Yellow.
-        robot.driveToColorEdge( HardwareDesignosaursJan.Direction.LEFT, 6.0, false ,this);
-        waitForGreen();
+        robot.driveToColorEdge( Hardware.Direction.LEFT, 6.0, true ,this);
+        waitForYellow();
+
         // Back up to get the grabber centered.
-        robot.moveRampToPosition( HardwareDesignosaursJan.Direction.LEFT, .4,2.2,robot,this,time);
-        waitForGreen();
-        robot.setLeftAutoManipulator();
-        waitForGreen();
+        robot.moveRampToPosition( Hardware.Direction.RIGHT, .4,8,robot,this,time);
+        waitForYellow();
+
+        // Backward (toward stone)  to be ready to grab that stone.
+        robot.moveRampToPosition( Hardware.Direction.BACKWARD, .4,1.5,robot,this,time);
+        waitForYellow();
+
+
+        // Deploy manipulator
+        robot.deployLeftAutoManipulator();
+        waitForYellow();
 
          while( true ) {
 
@@ -106,7 +113,7 @@ public class SkystoneAutoJan extends LinearOpMode {
 
         //robot.moveRampToPosition("right", .4,13.5,robot,this,time);
         robot.moveRampToPosition("forward", .4,24,robot,this,time);
-        waitForGreen();
+        waitForYellow();
         robot.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         imu.turnSimp(90,robot,this);
         //lockOn(false,false, .4);

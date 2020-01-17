@@ -14,7 +14,7 @@ public class TeleOpJan extends OpMode {
     boolean isLowGear = false;
 
 
-    HardwareDesignosaursJan Robot = new HardwareDesignosaursJan();
+    Hardware Robot = new Hardware();
     private ElapsedTime runtime = new ElapsedTime();
 
     double lastTime = runtime.now(TimeUnit.MILLISECONDS);

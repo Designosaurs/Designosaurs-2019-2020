@@ -3,14 +3,11 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-
-import java.util.concurrent.TimeUnit;
 
 public class ImuSubClass {
     BNO055IMU imu;
@@ -37,7 +34,7 @@ public class ImuSubClass {
 
 
 
-    void turnSimp(double degrees, double speed, HardwareDesignosaursJan robot, LinearOpMode opMode) {
+    void turnSimp(double degrees, double speed, Hardware robot, LinearOpMode opMode) {
         ReadIMU();
         double startHeading = getHeading();
         if (startHeading > degrees) {
@@ -63,7 +60,7 @@ public class ImuSubClass {
         }
     }
 
-    void turnSimp(double degrees, HardwareDesignosaursJan robot, LinearOpMode opMode) {
+    void turnSimp(double degrees, Hardware robot, LinearOpMode opMode) {
         turnSimp(degrees,.4, robot, opMode);
         turnSimp(degrees,.2, robot, opMode);
         turnSimp(degrees,.05, robot, opMode);

@@ -14,7 +14,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
-public class HardwareDesignosaursJan {
+public class Hardware {
 
     // Define Motors
     public DcMotor frontRight = null;
@@ -75,7 +75,7 @@ public class HardwareDesignosaursJan {
 
     HardwareMap hwMap = null;
 
-    public HardwareDesignosaursJan() {
+    public Hardware() {
 
     }
 
@@ -97,7 +97,7 @@ public class HardwareDesignosaursJan {
         mainGripperRight = hwMap.get(Servo.class, "right_manipulator");
         mainGripperLeft = hwMap.get(Servo.class, "left_manipulator");
         foundationGripper = hwMap.get(Servo.class, "foundation_manipulator");
-        leftAutoManipulator = hwMap.get(Servo.class, "leftAutoManipulator");
+        leftAutoManipulator = hwMap.get(Servo.class, "left_auto_manipulator");
         rightAutoManipulator = hwMap.get(Servo.class, "right_auto_manipulator");
         capstoneGripper = hwMap.get(Servo.class, "capstone_manipulator");
 
@@ -154,7 +154,7 @@ public class HardwareDesignosaursJan {
         leftAutoManipulator.setPosition(0);
     }
 
-    public void setLeftAutoManipulator (  ){
+    public void deployLeftAutoManipulator(  ){
         leftAutoManipulator.setPosition(1);
     }
 
@@ -173,7 +173,7 @@ public class HardwareDesignosaursJan {
         motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
 
-    public void setPowers (HardwareDesignosaursJan Robot, double speed) {
+    public void setPowers (Hardware Robot, double speed) {
         // this function sets all four drive motors to the specified power
         Robot.frontRight.setPower(speed);
         Robot.frontLeft.setPower(speed);
@@ -188,7 +188,7 @@ public class HardwareDesignosaursJan {
         backLeft.setPower(0);
     }
 
-    public void moveRampToPosition(String direction, double maxSpeed, double distance, HardwareDesignosaursJan Robot, LinearOpMode opMode, ElapsedTime time) {
+    public void moveRampToPosition(String direction, double maxSpeed, double distance, Hardware Robot, LinearOpMode opMode, ElapsedTime time) {
         // this function moves the specified number of inches in the given direction using acceleration ramps along with the built-in PIDs
         double encDist = distance / INCHES_PER_ENCODER_TICK; // calculate distance in encoder counts
 
@@ -284,12 +284,12 @@ public class HardwareDesignosaursJan {
         backLeft.setDirection(DcMotor.Direction.FORWARD);
     }
 
-    public void moveRampToPosition(Direction direction, double maxSpeed, double distance, HardwareDesignosaursJan Robot, LinearOpMode opMode, ElapsedTime time) {
+    public void moveRampToPosition(Direction direction, double maxSpeed, double distance, Hardware Robot, LinearOpMode opMode, ElapsedTime time) {
         direction = maybeFlip(direction);
         moveRampToPosition(direction.toString().toLowerCase(), maxSpeed, distance, Robot, opMode, time);
     }
 
-    void moveDirection(double north, double west, double rotate, HardwareDesignosaursJan robot) {
+    void moveDirection(double north, double west, double rotate, Hardware robot) {
         robot.frontLeft.setPower(-north + west + rotate);
         robot.frontRight.setPower(-north - west - rotate);
         robot.backLeft.setPower(north - west + rotate);
@@ -382,7 +382,7 @@ public class HardwareDesignosaursJan {
         do {
             runDirection(0.05, direction, true);
 
-            opMode.telemetry.addData("Doing", "driveToProx");
+            opMode.telemetry.addData("Doing", "driveToColorEdge");
             encReading = frontLeft.getCurrentPosition();
             opMode.telemetry.addData("fl enc", encReading );
             encDist = Math.abs( ((double) encReading) * INCHES_PER_ENCODER_TICK);
