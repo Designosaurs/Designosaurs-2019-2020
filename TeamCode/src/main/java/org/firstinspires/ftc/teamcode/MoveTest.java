@@ -3,12 +3,11 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 @Disabled
 @Deprecated
-@Autonomous(name="RTP Test no function", group="test")
+@Autonomous(name = "RTP Test no function", group = "test")
 public class MoveTest extends LinearOpMode {
 
     Hardware Robot = new Hardware();
@@ -31,10 +30,10 @@ public class MoveTest extends LinearOpMode {
         Robot.setTargetPos(Robot.backRight, encDist);
         Robot.setPowers(Robot, .4);
         while (opModeIsActive()) {
-            telemetry.addData("fr",Robot.frontRight.getCurrentPosition());
-            telemetry.addData("fl",Robot.frontLeft.getCurrentPosition());
-            telemetry.addData("br",Robot.backRight.getCurrentPosition());
-            telemetry.addData("bl",Robot.backLeft.getCurrentPosition());
+            telemetry.addData("fr", Robot.frontRight.getCurrentPosition());
+            telemetry.addData("fl", Robot.frontLeft.getCurrentPosition());
+            telemetry.addData("br", Robot.backRight.getCurrentPosition());
+            telemetry.addData("bl", Robot.backLeft.getCurrentPosition());
             telemetry.update();
         }
     }

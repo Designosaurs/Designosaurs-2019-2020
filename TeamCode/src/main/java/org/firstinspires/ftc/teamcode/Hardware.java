@@ -15,59 +15,40 @@ import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 public class Hardware {
+    public static final double wheel_diameter = 4;   // inches
+    public static final double encoder_ticks_per_revolution = 537.6;
+    public static final double INCHES_PER_ENCODER_TICK =
+            (wheel_diameter * Math.PI) /
+                    encoder_ticks_per_revolution; // used in encoder drive
+    public static final float mmPerInch = 25.4f;
     // Define Motors
     public DcMotor frontRight = null;
-    public DcMotor frontLeft  = null;
-    public DcMotor backRight  = null;
-    public DcMotor backLeft   = null;
+    public DcMotor frontLeft = null;
+    public DcMotor backRight = null;
+    public DcMotor backLeft = null;
     public DcMotor pitchMotor = null;
-    public DcMotor liftMotor  = null;
-
+    public DcMotor liftMotor = null;
     // Define Servos
-    public Servo mainGripper        = null;
-    public Servo foundationGripper  = null;
+    public Servo mainGripper = null;
+    public Servo foundationGripper = null;
     public Servo leftAutoManipulator = null;
     public Servo rightAutoManipulator = null;
-    public Servo capstoneGripper    = null;
-
-    public Servo mainGripperLeft    = null;
-    public Servo mainGripperRight   = null;
-
+    public Servo capstoneGripper = null;
+    public Servo mainGripperLeft = null;
+    public Servo mainGripperRight = null;
     // Define Sensors
-    public TouchSensor limitSwitch  = null;
-    public ColorSensor sensorColor  = null;
-    public DistanceSensor sensorDistance  = null;  // This is the one built into the color sensor.  Not accurate.
+    public TouchSensor limitSwitch = null;
+    public ColorSensor sensorColor = null;
+    public DistanceSensor sensorDistance = null;  // This is the one built into the color sensor.  Not accurate.
     public DistanceSensor sensorRange = null;      // The 2 Meter, accurate sensor.
-
-
-    private ElapsedTime time = new ElapsedTime();
-
-    // Define Variables
-    enum Direction {
-        FORWARD,
-        BACKWARD,
-        LEFT,
-        RIGHT,
-        CW,
-        CCW
-    }
     public boolean flip = false;
     public double accelPerSec = .8;
     public double decelPGain = INCHES_PER_ENCODER_TICK / 45;
     public double minSpeed = .2;
     public double sideBias = Math.sqrt(2);
-
     public int power = 3;
-
-    public static final double wheel_diameter = 4;   // inches
-    public static final double encoder_ticks_per_revolution = 537.6;
-    public static final double INCHES_PER_ENCODER_TICK =
-                    (wheel_diameter * Math.PI)/
-                            encoder_ticks_per_revolution; // used in encoder drive
-
-    public static final float mmPerInch = 25.4f;
-
     HardwareMap hwMap = null;
+    private ElapsedTime time = new ElapsedTime();
 
     public Hardware() {
 
@@ -77,10 +58,10 @@ public class Hardware {
     public void init2(HardwareMap hwMap) {
         // Initialize Motors
         // the FR & FL motors are intentionally switched due to a bug
-        frontRight = hwMap.get(DcMotor.class,"front_left");
-        frontLeft = hwMap.get(DcMotor.class,"front_right");
-        backRight = hwMap.get(DcMotor.class,"back_right");
-        backLeft = hwMap.get(DcMotor.class,"back_left");
+        frontRight = hwMap.get(DcMotor.class, "front_left");
+        frontLeft = hwMap.get(DcMotor.class, "front_right");
+        backRight = hwMap.get(DcMotor.class, "back_right");
+        backLeft = hwMap.get(DcMotor.class, "back_left");
         liftMotor = hwMap.get(DcMotor.class, "lift_motor");
 
         // Initialize Servos
@@ -92,11 +73,12 @@ public class Hardware {
         capstoneGripper = hwMap.get(Servo.class, "capstone_manipulator");
 
         // Initialize Sensors
-        sensorRange = hwMap.get(DistanceSensor.class,"sensor_range");
+        sensorRange = hwMap.get(DistanceSensor.class, "sensor_range");
         try {
-            limitSwitch = hwMap.get(TouchSensor.class,"touch_sensor");
+            limitSwitch = hwMap.get(TouchSensor.class, "touch_sensor");
 
-        } catch (Exception e) {}
+        } catch (Exception e) {
+        }
 
 
         // get a reference to the color sensor.
@@ -129,11 +111,11 @@ public class Hardware {
 
 
         // Motors should brake at zero power
-        frontLeft.setZeroPowerBehavior( DcMotor.ZeroPowerBehavior.BRAKE);
-        frontRight.setZeroPowerBehavior( DcMotor.ZeroPowerBehavior.BRAKE);
-        backLeft.setZeroPowerBehavior( DcMotor.ZeroPowerBehavior.BRAKE);
-        backRight.setZeroPowerBehavior( DcMotor.ZeroPowerBehavior.BRAKE);
-        liftMotor.setZeroPowerBehavior( DcMotor.ZeroPowerBehavior.BRAKE);
+        frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        liftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         // Set Servo Positions
         mainGripperLeft.setPosition(0.8);  // Open
@@ -145,51 +127,45 @@ public class Hardware {
         resetLeftAutoManipulator();
     }
 
-    //////////////////  SERVO MANIPULATION //////////////////////////
-
     public void init2(HardwareMap hwMap, int xPos, int yPos, int thetaPos) {
         init2(hwMap);
     }
 
-    public void resetLeftAutoManipulator (  ){
+    //////////////////  SERVO MANIPULATION //////////////////////////
+
+    public void resetLeftAutoManipulator() {
         leftAutoManipulator.setPosition(0);
     }
 
-    public void deployLeftAutoManipulator(  ){
+    public void deployLeftAutoManipulator() {
         leftAutoManipulator.setPosition(1);
+    }
+
+    boolean seesYellow(LinearOpMode opMode) {
+        int red = 0;
+        red = sensorColor.red();
+        opMode.telemetry.addData("Red", red);
+        return red > 55;
     }
 
 
     ///////////////////////////////  SENSORS ////////////////////////////////////
 
-    boolean seesYellow( LinearOpMode opMode ){
-        int red = 0;
-        red = sensorColor.red();
-        opMode.telemetry.addData("Red", red );
-        if ( red > 55 ) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-
-
     /////////////////////////////  MOVES /////////////////////////////////////////////
     // Drive until the proximity sensor (part of the color / prox sensor) shows less than the target value.
     // This is intended to be close so we go slow, and with encoders so we creep.
     // Return true if successful.
-    boolean driveToProx( double targetProx, double TimeoutSecs, LinearOpMode opMode ){
+    boolean driveToProx(double targetProx, double TimeoutSecs, LinearOpMode opMode) {
         double startTime = time.now(TimeUnit.MILLISECONDS);
         double Prox = 1000;
-        while (time.now(TimeUnit.MILLISECONDS) - startTime < TimeoutSecs * 1000 ) {
+        while (time.now(TimeUnit.MILLISECONDS) - startTime < TimeoutSecs * 1000) {
             runDirection(0.05, Direction.BACKWARD, true);
             Prox = sensorDistance.getDistance(DistanceUnit.CM);
             opMode.telemetry.addData("Doing", "driveToProx");
             opMode.telemetry.addData("Prox (cm)",
-                    String.format(Locale.US, "%.01f", Prox ));
+                    String.format(Locale.US, "%.01f", Prox));
             opMode.telemetry.update();
-            if (Prox < targetProx){
+            if (Prox < targetProx) {
                 stopDrive();
                 return true;
             }
@@ -204,11 +180,11 @@ public class Hardware {
     // Return true with the robot stopped if we found the edge.
     // Return false with the robot stopped if we went the maxDistance without
     // seeing an edge.
-    boolean driveToColorEdge( Direction direction, double maxDistance, boolean lookForYellow, LinearOpMode opMode ){
+    boolean driveToColorEdge(Direction direction, double maxDistance, boolean lookForYellow, LinearOpMode opMode) {
 
         double encDist = 0;
         int encReading = 0;
-        setMode( DcMotor.RunMode.STOP_AND_RESET_ENCODER); //Reset all encoders.
+        setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER); //Reset all encoders.
 
         // Run until we see that edge, or maxDistane, whichever is first.
         do {
@@ -216,39 +192,38 @@ public class Hardware {
 
             opMode.telemetry.addData("Doing", "driveToColorEdge");
             encReading = frontLeft.getCurrentPosition();
-            opMode.telemetry.addData("fl enc", encReading );
-            encDist = Math.abs( ((double) encReading) * INCHES_PER_ENCODER_TICK);
+            opMode.telemetry.addData("fl enc", encReading);
+            encDist = Math.abs(((double) encReading) * INCHES_PER_ENCODER_TICK);
             opMode.telemetry.addData("Dist ",
-                    String.format(Locale.US, "%.01f", encDist ));
+                    String.format(Locale.US, "%.01f", encDist));
 
             // If we are looking for yellow, stop when we see it.
-            if (lookForYellow){
-                if ( seesYellow( opMode)) {
+            if (lookForYellow) {
+                if (seesYellow(opMode)) {
                     stopDrive();
                     opMode.telemetry.update();
                     return true;
                 }
             } else {
-                if ( !seesYellow( opMode)) {
+                if (!seesYellow(opMode)) {
                     stopDrive();
                     opMode.telemetry.update();
                     return true;
                 }
             }
             opMode.telemetry.update();
-        } while ( encDist < maxDistance );
+        } while (encDist < maxDistance);
         stopDrive();
         return false;
     }
 
-
-    public void setTargetPos (DcMotor motor, double position) {
+    public void setTargetPos(DcMotor motor, double position) {
         // this function sets the specified motor to go to the specified position
-        motor.setTargetPosition( (int) Math.round(position));
+        motor.setTargetPosition((int) Math.round(position));
         motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
 
-    public void setPowers (Hardware Robot, double speed) {
+    public void setPowers(Hardware Robot, double speed) {
         // this function sets all four drive motors to the specified power
         Robot.frontRight.setPower(speed);
         Robot.frontLeft.setPower(speed);
@@ -256,7 +231,7 @@ public class Hardware {
         Robot.backLeft.setPower(speed);
     }
 
-    public void stopDrive(  ){
+    public void stopDrive() {
         frontRight.setPower(0);
         frontLeft.setPower(0);
         backRight.setPower(0);
@@ -288,7 +263,7 @@ public class Hardware {
             setTargetPos(Robot.frontLeft, -encDist * sideBias);
             setTargetPos(Robot.frontRight, encDist * sideBias);
             setTargetPos(Robot.backLeft, encDist * sideBias);
-            setTargetPos(Robot.backRight, -  encDist * sideBias);
+            setTargetPos(Robot.backRight, -encDist * sideBias);
 
         } else if (direction == "right") {
             setTargetPos(Robot.frontLeft, encDist * sideBias);
@@ -296,7 +271,7 @@ public class Hardware {
             setTargetPos(Robot.backLeft, -encDist * sideBias);
             setTargetPos(Robot.backRight, encDist * sideBias);
         } else {
-            opMode.telemetry.addData("failure","invalid input");
+            opMode.telemetry.addData("failure", "invalid input");
             opMode.telemetry.update();
         }
 
@@ -321,7 +296,7 @@ public class Hardware {
                 rampUpSpeed = maxSpeed;
             }
             // calculate rampdown, remaining distance / 10, no less than min var
-            rampDownSpeed = Math.max(Math.abs(Math.abs(Robot.frontRight.getCurrentPosition()* INCHES_PER_ENCODER_TICK) - distance) * 1/10, minSpeed);
+            rampDownSpeed = Math.max(Math.abs(Math.abs(Robot.frontRight.getCurrentPosition() * INCHES_PER_ENCODER_TICK) - distance) * 1 / 10, minSpeed);
             // lock ramp down at min var
             if (rampDownLock) {
                 rampDownSpeed = minSpeed;
@@ -330,15 +305,15 @@ public class Hardware {
             }
 
             //set powers to whatever is lower, rampup or rampdown
-            currentSpeed = Math.min(rampUpSpeed,rampDownSpeed);
+            currentSpeed = Math.min(rampUpSpeed, rampDownSpeed);
             setPowers(Robot, currentSpeed);
 
             //display debug info
-            opMode.telemetry.addData("fr",Robot.frontRight.getCurrentPosition());
-            opMode.telemetry.addData("fl",Robot.frontLeft.getCurrentPosition());
-            opMode.telemetry.addData("br",Robot.backRight.getCurrentPosition());
-            opMode.telemetry.addData("bl",Robot.backLeft.getCurrentPosition());
-            opMode.telemetry.addData("ReadIMU ps", 1/deltaTime);
+            opMode.telemetry.addData("fr", Robot.frontRight.getCurrentPosition());
+            opMode.telemetry.addData("fl", Robot.frontLeft.getCurrentPosition());
+            opMode.telemetry.addData("br", Robot.backRight.getCurrentPosition());
+            opMode.telemetry.addData("bl", Robot.backLeft.getCurrentPosition());
+            opMode.telemetry.addData("ReadIMU ps", 1 / deltaTime);
             opMode.telemetry.addData("ramp up speed", rampUpSpeed);
             opMode.telemetry.addData("ramp down speed", rampDownSpeed);
             opMode.telemetry.addData("target speed", currentSpeed);
@@ -362,12 +337,6 @@ public class Hardware {
 
     }
 
-    // This does not actually work!
-    // public void moveRampToPosition(Direction direction, double maxSpeed, double distance, Hardware Robot, LinearOpMode opMode, ElapsedTime time) {
-    //    direction = maybeFlip(direction);
-    //    moveRampToPosition(direction.toString().toLowerCase(), maxSpeed, distance, Robot, opMode, time);
-    //}
-
     void moveDirection(double north, double west, double rotate, Hardware robot) {
         robot.frontLeft.setPower(-north + west + rotate);
         robot.frontRight.setPower(-north - west - rotate);
@@ -375,46 +344,48 @@ public class Hardware {
         robot.backRight.setPower(north + west - rotate);
     }
 
-    void moveDirection(double north, double west, double rotate) {
-        moveDirection(north,west,rotate,this);
-    }
-
-    //double getDistance() {
-     //   return sensorRange.getDistance(DistanceUnit.INCH);
+    // This does not actually work!
+    // public void moveRampToPosition(Direction direction, double maxSpeed, double distance, Hardware Robot, LinearOpMode opMode, ElapsedTime time) {
+    //    direction = maybeFlip(direction);
+    //    moveRampToPosition(direction.toString().toLowerCase(), maxSpeed, distance, Robot, opMode, time);
     //}
+
+    void moveDirection(double north, double west, double rotate) {
+        moveDirection(north, west, rotate, this);
+    }
 
     void wait(double seconds, LinearOpMode opMode, ElapsedTime time) {
         double startTime = time.now(TimeUnit.MILLISECONDS);
         while (time.now(TimeUnit.MILLISECONDS) - startTime < seconds * 1000 && opMode.opModeIsActive()) {
-            opMode.telemetry.addData("wait","ing");
+            opMode.telemetry.addData("wait", "ing");
             opMode.telemetry.update();
         }
     }
 
-    void setMode(DcMotor.RunMode mode){
+    //double getDistance() {
+    //   return sensorRange.getDistance(DistanceUnit.INCH);
+    //}
+
+    void setMode(DcMotor.RunMode mode) {
         frontRight.setMode(mode);
         frontLeft.setMode(mode);
         backRight.setMode(mode);
         backLeft.setMode(mode);
     }
 
-
-
-
     // Drive until the proximity sensor (part of the color / prox sensor) shows less than the target value.
     // This is intended to be close so we go slow, and with encoders so we creep.
     // Return true if successful.
-    void delaySecs( double  TimeoutSecs  ){
+    void delaySecs(double TimeoutSecs) {
         double startTime = time.now(TimeUnit.MILLISECONDS);
-        while (time.now(TimeUnit.MILLISECONDS) - startTime < TimeoutSecs * 1000 ) {
+        while (time.now(TimeUnit.MILLISECONDS) - startTime < TimeoutSecs * 1000) {
         }
         stopDrive();
 
     }
 
-
-    void runDirection(double speed, Direction direction, boolean withEncoders ) {
-        if ( withEncoders ){
+    void runDirection(double speed, Direction direction, boolean withEncoders) {
+        if (withEncoders) {
             setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         } else {
             setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -444,7 +415,7 @@ public class Hardware {
         }
     }
 
-    void setPowers(double speed){
+    void setPowers(double speed) {
         setPowers(this, speed);
     }
 
@@ -467,14 +438,12 @@ public class Hardware {
     }
 
     double limit(double input, double max, double min) {
-        return Math.max(Math.min(input,max),min);
+        return Math.max(Math.min(input, max), min);
     }
 
-    double limit (double input, double max) {
-        return limit(input,max,-max);
+    double limit(double input, double max) {
+        return limit(input, max, -max);
     }
-
-    // Match Functions
 
     public double square(double base, int power) { //function that does fractional squaring
         if (base == 0) {
@@ -485,7 +454,7 @@ public class Hardware {
             based = base; // denominator
 
             // Multiplies numerator
-            for (int i = 0; i < (power+16); i++) {
+            for (int i = 0; i < (power + 16); i++) {
                 basen *= base;
             }
 
@@ -493,9 +462,21 @@ public class Hardware {
             for (int i = 0; i < 16; i++) {
                 based *= base;
             }
-            return basen/based;
+            return basen / based;
 
         }
+    }
+
+    // Match Functions
+
+    // Define Variables
+    enum Direction {
+        FORWARD,
+        BACKWARD,
+        LEFT,
+        RIGHT,
+        CW,
+        CCW
     }
 
 }

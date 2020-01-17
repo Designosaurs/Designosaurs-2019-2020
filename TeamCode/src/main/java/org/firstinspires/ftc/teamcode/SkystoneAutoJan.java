@@ -1,29 +1,20 @@
 package org.firstinspires.ftc.teamcode;
 
-import android.graphics.Color;
-
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-
-import java.util.Locale;
-
 @Autonomous(name = "Jan Skystone Auto", group = "!Auto")
 public class SkystoneAutoJan extends LinearOpMode {
+    final double SCALE_FACTOR = 255;
     ImuSubClass imu = new ImuSubClass();
     Hardware robot = new Hardware();
     ElapsedTime time = new ElapsedTime();
-
     // hsvValues is an array that will hold the hue, saturation, and value information.
-    float hsvValues[] = {0F, 0F, 0F};
-
+    float[] hsvValues = {0F, 0F, 0F};
     // values is a reference to the hsvValues array.
-    final float values[] = hsvValues;
-    final double SCALE_FACTOR = 255;
-
+    final float[] values = hsvValues;
     boolean enabableStops = true; // Set to true to stop between steps for debugging.
 
     // Debugging aid-- wait for press of green button (a).

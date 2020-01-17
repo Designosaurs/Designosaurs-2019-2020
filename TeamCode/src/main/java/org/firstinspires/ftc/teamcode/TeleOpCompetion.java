@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import java.util.concurrent.TimeUnit;
 
-@TeleOp(name="Teleop Competition", group="!TeleOp")
+@TeleOp(name = "Teleop Competition", group = "!TeleOp")
 public class TeleOpCompetion extends OpMode {
 
     // variables
@@ -15,10 +15,9 @@ public class TeleOpCompetion extends OpMode {
 
 
     Hardware Robot = new Hardware();
-    private ElapsedTime runtime = new ElapsedTime();
-
-    double lastTime = runtime.now(TimeUnit.MILLISECONDS);
     double deltaTime = 0;
+    private ElapsedTime runtime = new ElapsedTime();
+    double lastTime = runtime.now(TimeUnit.MILLISECONDS);
 
     @Override
     public void init() {
@@ -27,7 +26,7 @@ public class TeleOpCompetion extends OpMode {
         telemetry.addData("status: ", "Ready!");
         Robot.liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         Robot.liftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        Robot.liftMotor.setZeroPowerBehavior( DcMotor.ZeroPowerBehavior.BRAKE);
+        Robot.liftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
 
     @Override
@@ -64,10 +63,10 @@ public class TeleOpCompetion extends OpMode {
 
         // set motor speeds
         if (isLowGear) {
-            Robot.frontRight.setPower(fr/3);
-            Robot.frontLeft.setPower(fl/3);
-            Robot.backRight.setPower(br/3);
-            Robot.backLeft.setPower(bl/3);
+            Robot.frontRight.setPower(fr / 3);
+            Robot.frontLeft.setPower(fl / 3);
+            Robot.backRight.setPower(br / 3);
+            Robot.backLeft.setPower(bl / 3);
         } else {
             Robot.frontRight.setPower(fr);
             Robot.frontLeft.setPower(fl);
@@ -84,13 +83,13 @@ public class TeleOpCompetion extends OpMode {
 
         /////////////////  GUNNER ////////////////////////
         //  Open the gripper
-        if (gamepad2.right_bumper){
+        if (gamepad2.right_bumper) {
             Robot.mainGripperLeft.setPosition(0.8);
             Robot.mainGripperRight.setPosition(.25);
 
         }
         // Close the gripper
-        if (gamepad2.right_trigger > 0.5 ){
+        if (gamepad2.right_trigger > 0.5) {
             Robot.mainGripperLeft.setPosition(.25);
             Robot.mainGripperRight.setPosition(1);
         }
@@ -99,16 +98,16 @@ public class TeleOpCompetion extends OpMode {
         // Lift up => negative values of encoder.
         // Negative power => ift up.
         // Gamepad X functions as an override limit.
-        if (Robot.limitSwitch.isPressed() ) {
+        if (Robot.limitSwitch.isPressed()) {
             // Limit switch is pressed, so may only go up.
-            Robot.liftMotor.setPower(Math.min(0,gamepad2.left_stick_y));
-        } else if (Robot.liftMotor.getCurrentPosition() <= -4650 ) {
+            Robot.liftMotor.setPower(Math.min(0, gamepad2.left_stick_y));
+        } else if (Robot.liftMotor.getCurrentPosition() <= -4650) {
             // Hit endocder limit.  So, may only go down.
-            Robot.liftMotor.setPower(Math.max(0,gamepad2.left_stick_y));
+            Robot.liftMotor.setPower(Math.max(0, gamepad2.left_stick_y));
         } else {
             // Normal operation.  Not hitting any limit.
             // Set the power according to where it is.
-            if (Robot.liftMotor.getCurrentPosition() < 1000 ) {
+            if (Robot.liftMotor.getCurrentPosition() < 1000) {
                 // Normal operation limit motor to 70%.  Don't break the hardware!
                 Robot.liftMotor.setPower(gamepad2.left_stick_y * 0.7);
             } else {
@@ -119,7 +118,7 @@ public class TeleOpCompetion extends OpMode {
 
         // Lift Control- B button: Descend and reset zero. is decsencd and reeset zero.
         if (gamepad2.b) {
-            if (Robot.limitSwitch.isPressed()){
+            if (Robot.limitSwitch.isPressed()) {
                 Robot.liftMotor.setPower(0);
                 Robot.liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                 Robot.liftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -136,21 +135,20 @@ public class TeleOpCompetion extends OpMode {
         }
 
         telemetry.addData("lift enc", Robot.liftMotor.getCurrentPosition());
-        telemetry.addData("Lift",Robot.liftMotor.getPower());
-        telemetry.addData("fr",Robot.frontRight.getCurrentPosition());
-        telemetry.addData("fl",Robot.frontLeft.getCurrentPosition());
-        telemetry.addData("br",Robot.backRight.getCurrentPosition());
-        telemetry.addData("bl",Robot.backLeft.getCurrentPosition());
-        telemetry.addData("touch",Robot.limitSwitch.isPressed());
+        telemetry.addData("Lift", Robot.liftMotor.getPower());
+        telemetry.addData("fr", Robot.frontRight.getCurrentPosition());
+        telemetry.addData("fl", Robot.frontLeft.getCurrentPosition());
+        telemetry.addData("br", Robot.backRight.getCurrentPosition());
+        telemetry.addData("bl", Robot.backLeft.getCurrentPosition());
+        telemetry.addData("touch", Robot.limitSwitch.isPressed());
         telemetry.update();
-
 
 
     }
 
     @Override
     public void stop() {
-        telemetry.addData("status: ","Done!");
+        telemetry.addData("status: ", "Done!");
     }
 
 }

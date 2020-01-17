@@ -4,7 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@Autonomous(name="90* Turn test", group="Z")
+@Autonomous(name = "90* Turn test", group = "Z")
 public class turnTest extends LinearOpMode {
     Hardware robot = new Hardware();
     ImuSubClass imu = new ImuSubClass();
@@ -17,6 +17,6 @@ public class turnTest extends LinearOpMode {
 
         waitForStart();
 
-        imu.turnSimp(90,robot, this);
+        imu.turnSimp(90, robot, this);
     }
 }

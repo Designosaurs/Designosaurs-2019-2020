@@ -17,8 +17,8 @@ import java.util.concurrent.TimeUnit;
 // this autonomous program finds the skystones on the blue side and delivers them
 @Disabled
 @Deprecated
-@Autonomous(name="Blue Skystone", group="Mechanum")
-public class BlueSkystoneAuto extends LinearOpMode{
+@Autonomous(name = "Blue Skystone", group = "Mechanum")
+public class BlueSkystoneAuto extends LinearOpMode {
 
     private static final String TFOD_MODEL_ASSET = "Skystone.tflite";
     private static final String LABEL_FIRST_ELEMENT = "Stone";
@@ -27,14 +27,11 @@ public class BlueSkystoneAuto extends LinearOpMode{
     // vuforia licence key
     private static final String VUFORIA_KEY =
             "AdCuaEX/////AAABmXYJgRHZxkB9gj+81cIaX+JZm4W2w3Ee2HhKucJINnuXQ8l214BoCiyEk04zmQ/1VPvo+8PY7Um3eI5rI4WnSJmEXo7jyMz2WZDkkRnA88uBCtbml8CsMSIS7J3aUcgVd9P8ocLLgwqpavhEEaUixEx/16rgzIEtuHcq5ghQzzCkqR1xvAaxnx5lWM+ixf6hBCfZEnaiUM7WjD4gflO55IpoO/CdCWQrGUw2LuUKW2J+4K6ftKwJ+B1Qdy7pt2tDrGZvMyB4AcphPuoJRCSr5NgRoNWZ+WH5LqAdzYEO0Bv7C9LeSgmSPPT7GPPDpjv6+3DO5BE6l+2uMYQQbuF11BWKKq5Xp+D5Y6l2+W97zpgP";
-
+    public int pos = 0;
+    Hardware Robot = new Hardware();
     private VuforiaLocalizer vuforia;
     private TFObjectDetector tfod;
-
-    Hardware Robot = new Hardware();
-    private ElapsedTime     runtime = new ElapsedTime();
-
-    public int pos = 0;
+    private ElapsedTime runtime = new ElapsedTime();
 
     @Override
     public void runOpMode() {
@@ -110,31 +107,30 @@ public class BlueSkystoneAuto extends LinearOpMode{
             }
 
 
-
         }
 
         // first skystone
         if (pos == 0) {
-            Robot.moveRampToPosition("left",1,7.5 ,Robot ,this, runtime);
+            Robot.moveRampToPosition("left", 1, 7.5, Robot, this, runtime);
         } else if (pos == 1) {
-            Robot.moveRampToPosition("left",1,1.5 ,Robot ,this, runtime);
+            Robot.moveRampToPosition("left", 1, 1.5, Robot, this, runtime);
         } else if (pos == 2) {
-            Robot.moveRampToPosition("right",1,5.5 ,Robot ,this, runtime);
+            Robot.moveRampToPosition("right", 1, 5.5, Robot, this, runtime);
         }
-        Robot.moveRampToPosition("backward", .4, 8 ,Robot, this, runtime);
+        Robot.moveRampToPosition("backward", .4, 8, Robot, this, runtime);
         Robot.mainGripperLeft.setPosition(1);
         runtime.reset();
         while (runtime.time(TimeUnit.MILLISECONDS) < 500 && opModeIsActive()) {
             telemetry.addData("time elapsed", runtime.time(TimeUnit.MILLISECONDS));
             telemetry.update();
         }
-        Robot.moveRampToPosition("forward", 1, 9.0 ,Robot, this, runtime);
+        Robot.moveRampToPosition("forward", 1, 9.0, Robot, this, runtime);
         if (pos == 0) {
-            Robot.moveRampToPosition("right", .5, 43.0 ,Robot, this, runtime);
+            Robot.moveRampToPosition("right", .5, 43.0, Robot, this, runtime);
         } else if (pos == 1) {
-            Robot.moveRampToPosition("right", .5, 37.0 ,Robot, this, runtime);
+            Robot.moveRampToPosition("right", .5, 37.0, Robot, this, runtime);
         } else if (pos == 2) {
-            Robot.moveRampToPosition("right", .3, 32.5 ,Robot, this, runtime);
+            Robot.moveRampToPosition("right", .3, 32.5, Robot, this, runtime);
         }
 
         Robot.mainGripperLeft.setPosition(0);
@@ -147,27 +143,27 @@ public class BlueSkystoneAuto extends LinearOpMode{
         //second skystone
 
         if (pos == 0) {
-            Robot.moveRampToPosition("left",.5,62 - 2 ,Robot ,this, runtime);
+            Robot.moveRampToPosition("left", .5, 62 - 2, Robot, this, runtime);
         } else if (pos == 1) {
-            Robot.moveRampToPosition("left",1,62- 7.5 ,Robot ,this, runtime);
+            Robot.moveRampToPosition("left", 1, 62 - 7.5, Robot, this, runtime);
         } else if (pos == 2) {
-            Robot.moveRampToPosition("left",.5,62 - 12 ,Robot ,this, runtime);
+            Robot.moveRampToPosition("left", .5, 62 - 12, Robot, this, runtime);
         }
 
-        Robot.moveRampToPosition("backward", .2, 9 ,Robot, this, runtime);
+        Robot.moveRampToPosition("backward", .2, 9, Robot, this, runtime);
         Robot.mainGripperLeft.setPosition(1);
         runtime.reset();
         while (runtime.time(TimeUnit.MILLISECONDS) < 500 && opModeIsActive()) {
             telemetry.addData("time elapsed", runtime.time(TimeUnit.MILLISECONDS));
             telemetry.update();
         }
-        Robot.moveRampToPosition("forward", 1, 8.0 ,Robot, this, runtime);
+        Robot.moveRampToPosition("forward", 1, 8.0, Robot, this, runtime);
         if (pos == 0) {
-            Robot.moveRampToPosition("right", .5, 62.0 ,Robot, this, runtime);
+            Robot.moveRampToPosition("right", .5, 62.0, Robot, this, runtime);
         } else if (pos == 1) {
-            Robot.moveRampToPosition("right", .5, 56.0 ,Robot, this, runtime);
+            Robot.moveRampToPosition("right", .5, 56.0, Robot, this, runtime);
         } else if (pos == 2) {
-            Robot.moveRampToPosition("right", .5, 50.0 ,Robot, this, runtime);
+            Robot.moveRampToPosition("right", .5, 50.0, Robot, this, runtime);
         }
         //Robot.moveRampToPosition("backward", 1, 1 ,Robot, this, runtime);
         Robot.mainGripperLeft.setPosition(0);
@@ -176,7 +172,7 @@ public class BlueSkystoneAuto extends LinearOpMode{
             telemetry.addData("time elapsed", runtime.time(TimeUnit.MILLISECONDS));
             telemetry.update();
         }
-        Robot.moveRampToPosition("left", 1, 12 ,Robot, this, runtime);
+        Robot.moveRampToPosition("left", 1, 12, Robot, this, runtime);
 
         // shutdown tensorflow when done
         if (tfod != null) {
@@ -185,6 +181,7 @@ public class BlueSkystoneAuto extends LinearOpMode{
 
 
     }
+
     private void initVuforia() {
         /*
          * Configure Vuforia by creating a Parameter object, and passing it to the Vuforia engine.

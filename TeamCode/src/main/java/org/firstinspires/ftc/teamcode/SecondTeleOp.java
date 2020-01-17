@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import java.util.concurrent.TimeUnit;
 
-@TeleOp(name="Second Robot Mecanum Drive", group="!TeleOp")
+@TeleOp(name = "Second Robot Mecanum Drive", group = "!TeleOp")
 public class SecondTeleOp extends OpMode {
 
     // variables
@@ -15,10 +15,9 @@ public class SecondTeleOp extends OpMode {
 
 
     Hardware Robot = new Hardware();
-    private ElapsedTime runtime = new ElapsedTime();
-
-    double lastTime = runtime.now(TimeUnit.MILLISECONDS);
     double deltaTime = 0;
+    private ElapsedTime runtime = new ElapsedTime();
+    double lastTime = runtime.now(TimeUnit.MILLISECONDS);
 
     @Override
     public void init() {
@@ -56,10 +55,10 @@ public class SecondTeleOp extends OpMode {
 
         // set motor speeds
         if (isLowGear) {
-            Robot.frontRight.setPower(fr/3);
-            Robot.frontLeft.setPower(fl/3);
-            Robot.backRight.setPower(br/3);
-            Robot.backLeft.setPower(bl/3);
+            Robot.frontRight.setPower(fr / 3);
+            Robot.frontLeft.setPower(fl / 3);
+            Robot.backRight.setPower(br / 3);
+            Robot.backLeft.setPower(bl / 3);
         } else {
             Robot.frontRight.setPower(fr);
             Robot.frontLeft.setPower(fl);
@@ -69,28 +68,28 @@ public class SecondTeleOp extends OpMode {
 
 
         // set gripper location
-        if (gamepad2.right_bumper){
+        if (gamepad2.right_bumper) {
             Robot.mainGripperLeft.setPosition(1);
             Robot.mainGripperRight.setPosition(.25);
 
         }
 
-        if (gamepad2.left_bumper){
+        if (gamepad2.left_bumper) {
             Robot.mainGripperLeft.setPosition(.25);
             Robot.mainGripperRight.setPosition(1);
 
         }
 
         if (Robot.limitSwitch.isPressed() && !gamepad2.x) {
-            Robot.liftMotor.setPower(Math.min(0,gamepad2.left_stick_y));
+            Robot.liftMotor.setPower(Math.min(0, gamepad2.left_stick_y));
         } else if (Robot.liftMotor.getCurrentPosition() <= -4650 && !gamepad2.x) {
-            Robot.liftMotor.setPower(Math.max(0,gamepad2.left_stick_y));
+            Robot.liftMotor.setPower(Math.max(0, gamepad2.left_stick_y));
         } else {
             Robot.liftMotor.setPower(gamepad2.left_stick_y);
         }
 
         if (gamepad2.b) {
-            if (Robot.limitSwitch.isPressed()){
+            if (Robot.limitSwitch.isPressed()) {
                 Robot.liftMotor.setPower(0);
                 Robot.liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                 Robot.liftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -100,11 +99,11 @@ public class SecondTeleOp extends OpMode {
         }
 
         telemetry.addData("lift enc", Robot.liftMotor.getCurrentPosition());
-        telemetry.addData("fr",Robot.frontRight.getCurrentPosition());
-        telemetry.addData("fl",Robot.frontLeft.getCurrentPosition());
-        telemetry.addData("br",Robot.backRight.getCurrentPosition());
-        telemetry.addData("bl",Robot.backLeft.getCurrentPosition());
-        telemetry.addData("touch",Robot.limitSwitch.isPressed());
+        telemetry.addData("fr", Robot.frontRight.getCurrentPosition());
+        telemetry.addData("fl", Robot.frontLeft.getCurrentPosition());
+        telemetry.addData("br", Robot.backRight.getCurrentPosition());
+        telemetry.addData("bl", Robot.backLeft.getCurrentPosition());
+        telemetry.addData("touch", Robot.limitSwitch.isPressed());
         telemetry.update();
 
         if (gamepad2.dpad_up) {
@@ -139,7 +138,7 @@ public class SecondTeleOp extends OpMode {
 
     @Override
     public void stop() {
-        telemetry.addData("status: ","Done!");
+        telemetry.addData("status: ", "Done!");
     }
 
 }

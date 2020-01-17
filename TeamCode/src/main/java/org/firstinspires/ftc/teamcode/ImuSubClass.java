@@ -17,15 +17,15 @@ public class ImuSubClass {
 
     public void init(HardwareMap hardwareMap) {
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
-        parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
+        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
         parameters.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample opmode
         imu = hardwareMap.get(BNO055IMU.class, "imu");
         imu.initialize(parameters);
     }
 
     public void ReadIMU() {
-        angles   = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-        heading = AngleUnit.DEGREES.normalize(AngleUnit.DEGREES.fromUnit(angles.angleUnit,angles.firstAngle));
+        angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        heading = AngleUnit.DEGREES.normalize(AngleUnit.DEGREES.fromUnit(angles.angleUnit, angles.firstAngle));
     }
 
     public double getHeading() {
@@ -33,18 +33,17 @@ public class ImuSubClass {
     }
 
 
-
     void turnSimp(double degrees, double speed, Hardware robot, LinearOpMode opMode) {
         ReadIMU();
         double startHeading = getHeading();
         if (startHeading > degrees) {
-            robot.moveDirection(0,0,speed);
+            robot.moveDirection(0, 0, speed);
         } else {
-            robot.moveDirection(0,0,-speed);
+            robot.moveDirection(0, 0, -speed);
         }
         while (opMode.opModeIsActive()) {
-          opMode.telemetry.addData("target",degrees);
-            opMode.telemetry.addData("current",getHeading());
+            opMode.telemetry.addData("target", degrees);
+            opMode.telemetry.addData("current", getHeading());
             opMode.telemetry.update();
 
             ReadIMU();
@@ -61,9 +60,9 @@ public class ImuSubClass {
     }
 
     void turnSimp(double degrees, Hardware robot, LinearOpMode opMode) {
-        turnSimp(degrees,.4, robot, opMode);
-        turnSimp(degrees,.2, robot, opMode);
-        turnSimp(degrees,.05, robot, opMode);
+        turnSimp(degrees, .4, robot, opMode);
+        turnSimp(degrees, .2, robot, opMode);
+        turnSimp(degrees, .05, robot, opMode);
     }
 
 }
