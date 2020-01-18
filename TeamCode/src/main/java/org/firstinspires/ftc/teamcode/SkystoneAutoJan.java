@@ -49,7 +49,11 @@ public class SkystoneAutoJan extends LinearOpMode {
     // Return true if this is the target stone.
     // Will leave the bot right next to the stone.
     boolean checkForTarget() {
-        robot.driveToProx(6.0, 6.0, this);
+        if (teamColorBlue) {
+            robot.driveToProx(6.0, 6.0, this);
+        } else {
+            robot.driveToProx(9.0, 6.0, this);
+        }
         waitForYellow();
 
         return !robot.seesYellow(this);
@@ -63,14 +67,20 @@ public class SkystoneAutoJan extends LinearOpMode {
         // Creep until get into the Yellow.
         if (teamColorBlue) {
             robot.driveToColorInsideEdge(Hardware.Direction.RIGHT, 8.0, this);
+            robot.moveRampToPosition("backward", .4, 1, robot, this, time);
         } else {
-            robot.driveToColorOutsideEdge(Hardware.Direction.RIGHT, 8.0, this);
+            robot.driveToColorInsideEdge(Hardware.Direction.LEFT, 8.0, this);
         }
+
 
         waitForYellow();
 
         // Strafe to where we came from to get the grabber centered.
-        robot.moveRampToPosition(inside, .2, 3, robot, this, time);
+        if (teamColorBlue) {
+            robot.moveRampToPosition(inside, .2, 3, robot, this, time);
+        } else {
+            robot.moveRampToPosition(inside, .2, 1, robot, this, time);
+        }
         //waitForYellow();
 
         // Backward (toward stone)  to be ready to grab that stone.
@@ -79,12 +89,14 @@ public class SkystoneAutoJan extends LinearOpMode {
 
         // Deploy manipulator
         if (teamColorBlue) {
-            robot.deployRightAutoManipulator();
-        } else {
             robot.deployLeftAutoManipulator();
+            sleep(800);
+        } else {
+            robot.deployRightAutoManipulator();
+            sleep(800);
         }
 
-        sleep(800);
+
         //waitForYellow();
 
         // Ease the stone out
@@ -201,7 +213,11 @@ public class SkystoneAutoJan extends LinearOpMode {
         //waitForYellow();
 
         // Go toward the stone (backward) to just a few inches fron stone #1.
-        robot.moveRampToPosition("backward", .3, 12, robot, this, time);
+        if (teamColorBlue) {
+            robot.moveRampToPosition("backward", .3, 11, robot, this, time);
+        } else {
+            robot.moveRampToPosition("backward", .3, 9, robot, this, time);
+        }
         //waitForYellow();
 
         seekForStone();
@@ -220,6 +236,7 @@ public class SkystoneAutoJan extends LinearOpMode {
         }
         // give it time to let go of the block:
         sleep(500);
+        robot.moveRampToPosition("forward", 1, 1, robot, this, time);
 
         // park under the bridge, we don't have time:
         if (targetStoneNumber == 3) {
@@ -234,10 +251,17 @@ public class SkystoneAutoJan extends LinearOpMode {
         waitForYellow();
 
         // approach the blocks again.
-        robot.moveRampToPosition("backward", .5, 8, robot, this, time);
+        robot.moveRampToPosition("backward", .5, 9, robot, this, time);
         targetStoneNumber = 0;
         seekForStone();
-        distanceToGo = 40;
+        distanceToGo = 50;
         robot.moveRampToPosition(inside, .8, distanceToGo, robot, this, time);
+        if (teamColorBlue) {
+            robot.resetLeftAutoManipulator();
+        } else {
+            robot.resetRightAutoManipulator();
+        }
+
+        robot.moveRampToPosition(outside, .8, 12, robot, this, time);
     }
 }

@@ -144,11 +144,11 @@ public class Hardware {
     }
 
     public void resetRightAutoManipulator() {
-        rightAutoManipulator.setPosition(0);
+        rightAutoManipulator.setPosition(1);
     }
 
     public void deployRightAutoManipulator() {
-        leftAutoManipulator.setPosition(1);
+        rightAutoManipulator.setPosition(0);
     }
 
     boolean seesYellow(LinearOpMode opMode) {
@@ -183,7 +183,7 @@ public class Hardware {
         double startTime = time.now(TimeUnit.MILLISECONDS);
         double Prox = 1000;
         while (time.now(TimeUnit.MILLISECONDS) - startTime < TimeoutSecs * 1000) {
-            runDirection(0.1, Direction.BACKWARD, true);
+            runDirection(0.05, Direction.BACKWARD, true);
             Prox = sensorDistance.getDistance(DistanceUnit.CM);
             opMode.telemetry.addData("Doing", "driveToProx");
             opMode.telemetry.addData("Prox (cm)",
