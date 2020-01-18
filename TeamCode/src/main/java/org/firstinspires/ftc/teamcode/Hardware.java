@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
+import com.qualcomm.robotcore.robot.Robot;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
@@ -189,7 +190,7 @@ public class Hardware {
     // Return true with the robot stopped if we found the edge.
     // Return false with the robot stopped if we went the maxDistance without
     // seeing an edge.
-    boolean driveToColorEdge(Direction direction, double maxDistance, boolean lookForYellow, LinearOpMode opMode) {
+    boolean driveToColorOutsideEdge(Direction direction, double maxDistance, LinearOpMode opMode) {
 
         double encDist = 0;
         int encReading = 0;
@@ -199,32 +200,73 @@ public class Hardware {
         do {
             runDirection(0.05, direction, true);
 
-            opMode.telemetry.addData("Doing", "driveToColorEdge");
+            opMode.telemetry.addData("Doing", "driveToColorOutsideEdge");
             encReading = frontLeft.getCurrentPosition();
             opMode.telemetry.addData("fl enc", encReading);
             encDist = Math.abs(((double) encReading) * INCHES_PER_ENCODER_TICK);
             opMode.telemetry.addData("Dist ",
                     String.format(Locale.US, "%.01f", encDist));
 
-            // If we are looking for yellow, stop when we see it.
-            if (lookForYellow) {
+            // Stop when we see the yellow edge.
                 if (seesYellow(opMode)) {
                     stopDrive();
                     opMode.telemetry.update();
                     return true;
                 }
-            } else {
-                if (!seesYellow(opMode)) {
+
+            opMode.telemetry.update();
+        } while (encDist < maxDistance);
+        stopDrive();
+        return false;
+    }
+
+
+    // Similar to above, but strafe to the inside.
+    // Also, this will additionall exit if the proximity sensor shows that we
+    // are looking at ait.
+    // That can happen if the color sensor misses the small bit of yellow.
+    boolean driveToColorInsideEdge(Direction direction, double maxDistance,
+                                    LinearOpMode opMode) {
+
+        double encDist = 0;
+        int encReading = 0;
+        setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER); //Reset all encoders.
+
+        // Run until we see that edge, or maxDistane, whichever is first.
+        do {
+            runDirection(0.05, direction, true);
+            double Prox = 1000;
+
+            opMode.telemetry.addData("Doing", "driveToColorInsideEdge");
+            encReading = frontLeft.getCurrentPosition();
+            opMode.telemetry.addData("fl enc", encReading);
+            encDist = Math.abs(((double) encReading) * INCHES_PER_ENCODER_TICK);
+            opMode.telemetry.addData("Dist ",
+                    String.format(Locale.US, "%.01f", encDist));
+
+            // Stop if we see yellow.
+            if (seesYellow(opMode)) {
                     stopDrive();
                     opMode.telemetry.update();
                     return true;
                 }
+
+            // Also stop if we see air
+            Prox = sensorDistance.getDistance(DistanceUnit.CM);
+            if ( Prox > 10) {
+                stopDrive();
+                opMode.telemetry.update();
+                return true;
             }
             opMode.telemetry.update();
         } while (encDist < maxDistance);
         stopDrive();
         return false;
     }
+
+
+
+
 
     public void setTargetPos(DcMotor motor, double position) {
         // this function sets the specified motor to go to the specified position

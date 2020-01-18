@@ -17,6 +17,15 @@ public class SkystoneAutoJan extends LinearOpMode {
     // constant for size of playing element
     double stoneLength = 7.0;
 
+    // Stuff that changes with BLUE and RED
+    // These are set up for if we are on the blue side.
+    // They refer to the directions with respect to the robot for after it has made its 90
+    // degree turn, so the back is facing the skystones.
+    String inside = "right";
+    String outside = "left";
+    double turnToFaceStones = -90;
+
+
     // Debugging aid-- wait for press of green button (a).
     //  Add these as needed so you can setp through the critical parts.
     private void waitForYellow() {
@@ -44,8 +53,12 @@ public class SkystoneAutoJan extends LinearOpMode {
     }
 
     void grabStone() {
+        // Any slght angle misalignment will mean the sensor will get closer/further as it moves, so
+        // make sure it is aimedd right.
+        imu.correctHeading( turnToFaceStones, robot, this );
+
         // Creep until get into the Yellow.
-        robot.driveToColorEdge(Hardware.Direction.LEFT, 6.0, true, this);
+        robot.driveToColorOutsideEdge(Hardware.Direction.LEFT, 6.0,  this);
         //waitForYellow();
 
         // Strafe to where we came from to get the grabber centered.
@@ -150,7 +163,7 @@ public class SkystoneAutoJan extends LinearOpMode {
 
         // Rotate the robot so the back (sensor / manipulator) side faces stones.
         robot.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        imu.turnAndCorrect(-90, robot, this);
+        imu.turnAndCorrect(turnToFaceStones, robot, this);
         //waitForYellow();
 
         // Go toward the stone (backward) to just a few inches fron stone #1.
