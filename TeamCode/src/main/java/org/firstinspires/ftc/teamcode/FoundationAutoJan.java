@@ -87,7 +87,7 @@ public class FoundationAutoJan extends LinearOpMode {
             robot.moveRampToPosition("right", .4, 16, robot, this, time);
             sleep((100));
             robot.moveRampToPosition("backward", .4, 20, robot, this, time);
-            imu.turnAndCorrect(90, robot, this);
+            imu.correctHeading(90, robot, this);
             robot.moveRampToPosition("backward", .1, 7, robot, this, time);
 
             // Grab foundation and move it into the building site
@@ -117,7 +117,7 @@ public class FoundationAutoJan extends LinearOpMode {
             //imu.turnSimp(-90,robot,this);
             sleep(100);
             robot.moveRampToPosition("backward", .4, 22, robot, this, time);
-            imu.turnAndCorrect(-90, robot, this);
+            imu.correctHeading(-90, robot, this);
             robot.moveRampToPosition("backward", .1, 7, robot, this, time);
 
             // Grab foundation and move it into the building site

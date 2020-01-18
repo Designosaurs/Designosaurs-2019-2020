@@ -14,6 +14,8 @@ public class SkystoneAutoJan extends LinearOpMode {
     int targetStoneNumber = 0; // numbered from the inside (toward bridge), starting with 1.
     boolean enableStops = false; // Set to true to stop between steps for debugging.
     boolean teamColorBlue = true;
+    boolean getSecondStone = true;
+    boolean secondTimeAround = false;
 
     // constant for size of playing element
     double stoneLength = 7.0;
@@ -90,17 +92,27 @@ public class SkystoneAutoJan extends LinearOpMode {
         // Deploy manipulator
         if (teamColorBlue) {
             robot.deployLeftAutoManipulator();
-            sleep(800);
+            sleep(300);
         } else {
             robot.deployRightAutoManipulator();
-            sleep(800);
+            sleep(300);
         }
 
 
         //waitForYellow();
 
         // Ease the stone out
-        robot.moveRampToPosition("forward", .6, 14, robot, this, time);
+        if (teamColorBlue) {
+            if (secondTimeAround) {
+                robot.moveRampToPosition("forward", .6, 22, robot, this, time);
+            } else {
+                robot.moveRampToPosition("forward", .6, 16, robot, this, time);
+            }
+        } else {
+            robot.moveRampToPosition("forward", .6, 16, robot, this, time);
+        }
+        secondTimeAround = true;
+        imu.correctHeading(turnToFaceStones, robot, this);
         waitForYellow();
     }
 
@@ -204,7 +216,11 @@ public class SkystoneAutoJan extends LinearOpMode {
         //waitForYellow();
 
         // Go toward bridge a tiny bit to be right in front of stone #1.
-        robot.moveRampToPosition("backward", .4, 4.5, robot, this, time);
+        if (teamColorBlue) {
+            robot.moveRampToPosition("backward", .4, 4.5, robot, this, time);
+        } else {
+            robot.moveRampToPosition("backward", .4, 6.5, robot, this, time);
+        }
         //waitForYellow();
 
         // Rotate the robot so the back (sensor / manipulator) side faces stones.
@@ -235,33 +251,39 @@ public class SkystoneAutoJan extends LinearOpMode {
             robot.resetRightAutoManipulator();
         }
         // give it time to let go of the block:
-        sleep(500);
+        sleep(200);
         robot.moveRampToPosition("forward", 1, 1, robot, this, time);
 
         // park under the bridge, we don't have time:
         if (targetStoneNumber == 3) {
-            robot.moveRampToPosition(outside, .5, 10, robot, this, time);
+            robot.moveRampToPosition(outside, .5, 14, robot, this, time);
+            getSecondStone = false;
         }
 
-        //imu.correctHeading(turnToFaceStones, robot, this);
-        //distanceToGo = 36 + 2.0 * stoneLength * ( (double) targetStoneNumber - 1.0)
-        distanceToGo = 9;
-        robot.moveRampToPosition(outside, .8, distanceToGo + 44, robot, this, time);
-        imu.correctHeading(turnToFaceStones, robot, this);
-        waitForYellow();
+        if (getSecondStone) {
+            //imu.correctHeading(turnToFaceStones, robot, this);
+            //distanceToGo = 36 + 2.0 * stoneLength * ( (double) targetStoneNumber - 1.0)
+            distanceToGo = (targetStoneNumber * stoneLength);
+            if (teamColorBlue) {
+                distanceToGo = distanceToGo + 4;
+            }
+            robot.moveRampToPosition(outside, .8, distanceToGo + 44, robot, this, time);
+            imu.correctHeading(turnToFaceStones, robot, this);
+            waitForYellow();
 
-        // approach the blocks again.
-        robot.moveRampToPosition("backward", .5, 9, robot, this, time);
-        targetStoneNumber = 0;
-        seekForStone();
-        distanceToGo = 50;
-        robot.moveRampToPosition(inside, .8, distanceToGo, robot, this, time);
-        if (teamColorBlue) {
-            robot.resetLeftAutoManipulator();
-        } else {
-            robot.resetRightAutoManipulator();
+            // approach the blocks again.
+            robot.moveRampToPosition("backward", .5, 9, robot, this, time);
+            targetStoneNumber = 0;
+            seekForStone();
+            distanceToGo = 50;
+            robot.moveRampToPosition(inside, 1.0, distanceToGo, robot, this, time);
+            if (teamColorBlue) {
+                robot.resetLeftAutoManipulator();
+            } else {
+                robot.resetRightAutoManipulator();
+            }
+
+            robot.moveRampToPosition(outside, .8, 16, robot, this, time);
         }
-
-        robot.moveRampToPosition(outside, .8, 12, robot, this, time);
     }
 }
