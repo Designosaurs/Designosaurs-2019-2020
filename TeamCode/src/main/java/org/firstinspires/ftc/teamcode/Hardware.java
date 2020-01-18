@@ -152,10 +152,24 @@ public class Hardware {
     }
 
     boolean seesYellow(LinearOpMode opMode) {
-        int red = 0;
+        int red;
+        int green;
+        int blue;
+        double RGtoBRatio;
         red = sensorColor.red();
+        green = sensorColor.green();
+        blue = sensorColor.blue();
+        if (blue == 0) return false;
+        RGtoBRatio = ((double) red + (double) green) / (double) blue;
+
         opMode.telemetry.addData("Red", red);
-        return red > 55;
+        opMode.telemetry.addData( "Green", green );
+        opMode.telemetry.addData("Blue", blue);
+        opMode.telemetry.addData( "RGtoBRaion", RGtoBRatio);
+        opMode.telemetry.update();
+
+        return RGtoBRatio > 4.0;
+        //  return red > 55;
     }
 
 
