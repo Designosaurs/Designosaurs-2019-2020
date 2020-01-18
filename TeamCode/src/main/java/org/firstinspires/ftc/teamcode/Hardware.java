@@ -144,7 +144,7 @@ public class Hardware {
     }
 
     public void resetRightAutoManipulator() {
-        leftAutoManipulator.setPosition(0);
+        rightAutoManipulator.setPosition(0);
     }
 
     public void deployRightAutoManipulator() {
