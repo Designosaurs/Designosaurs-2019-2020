@@ -12,7 +12,7 @@ public class SkystoneAutoJan extends LinearOpMode {
     ElapsedTime time = new ElapsedTime();
 
     int targetStoneNumber = 0; // numbered from the inside (toward bridge), starting with 1.
-    boolean enabableStops = false; // Set to true to stop between steps for debugging.
+    boolean enableStops = true; // Set to true to stop between steps for debugging.
 
     // constant for size of playing element
     double stoneLength = 7.0;
@@ -29,7 +29,7 @@ public class SkystoneAutoJan extends LinearOpMode {
     // Debugging aid-- wait for press of green button (a).
     //  Add these as needed so you can setp through the critical parts.
     private void waitForYellow() {
-        if (!enabableStops) return;
+        if (!enableStops) return;
         while (true) {
             robot.stopDrive();
             if (gamepad1.y) break;
@@ -58,11 +58,11 @@ public class SkystoneAutoJan extends LinearOpMode {
         imu.correctHeading( turnToFaceStones, robot, this );
 
         // Creep until get into the Yellow.
-        robot.driveToColorOutsideEdge(Hardware.Direction.LEFT, 6.0,  this);
-        //waitForYellow();
+        robot.driveToColorInsideEdge(Hardware.Direction.RIGHT, 6.0, this);
+        waitForYellow();
 
         // Strafe to where we came from to get the grabber centered.
-        robot.moveRampToPosition("right", .2, 7, robot, this, time);
+        robot.moveRampToPosition("right", .2, 2, robot, this, time);
         //waitForYellow();
 
         // Backward (toward stone)  to be ready to grab that stone.
@@ -71,7 +71,7 @@ public class SkystoneAutoJan extends LinearOpMode {
 
         // Deploy manipulator
         robot.deployRightAutoManipulator();
-        sleep(500);
+        sleep(800);
         //waitForYellow();
 
         // Ease the stone out
@@ -180,13 +180,13 @@ public class SkystoneAutoJan extends LinearOpMode {
 
         // Drop the stone and park under the bridge.
         robot.resetLeftAutoManipulator();
+        imu.correctHeading(turnToFaceStones, robot, this);
         //distanceToGo = 36 + 2.0 * stoneLength * ( (double) targetStoneNumber - 1.0)
         distanceToGo = 9;
-        robot.moveRampToPosition("left", .6, distanceToGo, robot, this, time);
-        robot.moveRampToPosition("left", .6, 30, robot, this, time);
+        robot.moveRampToPosition("left", .6, distanceToGo + 40, robot, this, time);
         waitForYellow();
 
-        // approach the blocks again.
+        // approach the blocks again.7, 12, robot, this, time);
         seekForStone();
     }
 }
