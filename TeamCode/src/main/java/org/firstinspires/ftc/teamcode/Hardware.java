@@ -183,7 +183,7 @@ public class Hardware {
         double startTime = time.now(TimeUnit.MILLISECONDS);
         double Prox = 1000;
         while (time.now(TimeUnit.MILLISECONDS) - startTime < TimeoutSecs * 1000) {
-            runDirection(0.05, Direction.BACKWARD, true);
+            runDirection(0.1, Direction.BACKWARD, true);
             Prox = sensorDistance.getDistance(DistanceUnit.CM);
             opMode.telemetry.addData("Doing", "driveToProx");
             opMode.telemetry.addData("Prox (cm)",
@@ -248,7 +248,7 @@ public class Hardware {
 
         // Run until we see that edge, or maxDistane, whichever is first.
         do {
-            runDirection(0.05, direction, true);
+            runDirection(0.1, direction, true);
             double Prox = 1000;
 
             opMode.telemetry.addData("Doing", "driveToColorInsideEdge");
@@ -267,7 +267,8 @@ public class Hardware {
 
             // Also stop if we see air
             Prox = sensorDistance.getDistance(DistanceUnit.CM);
-            if ( Prox > 10) {
+            opMode.telemetry.addData("Prox", Prox);
+            if (Prox > 20) {
                 stopDrive();
                 opMode.telemetry.update();
                 return true;
@@ -391,11 +392,11 @@ public class Hardware {
 
 
         // wait for 500ms so PIDs can settle
-        time.reset();
-        while (time.time(TimeUnit.MILLISECONDS) < 500 && opMode.opModeIsActive()) {
-            opMode.telemetry.addData("time until quit", 500 - time.time(TimeUnit.MILLISECONDS));
-            opMode.telemetry.update();
-        }
+//        time.reset();
+//        while (time.time(TimeUnit.MILLISECONDS) < 500 && opMode.opModeIsActive()) {
+//            opMode.telemetry.addData("time until quit", 500 - time.time(TimeUnit.MILLISECONDS));
+//            opMode.telemetry.update();
+//        }
         //stop robot
         setPowers(Robot, 0);
 
@@ -453,7 +454,6 @@ public class Hardware {
         while (time.now(TimeUnit.MILLISECONDS) - startTime < TimeoutSecs * 1000) {
         }
         stopDrive();
-
     }
 
     void runDirection(double speed, Direction direction, boolean withEncoders) {

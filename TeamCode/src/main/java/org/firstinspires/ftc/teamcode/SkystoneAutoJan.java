@@ -12,7 +12,7 @@ public class SkystoneAutoJan extends LinearOpMode {
     ElapsedTime time = new ElapsedTime();
 
     int targetStoneNumber = 0; // numbered from the inside (toward bridge), starting with 1.
-    boolean enableStops = true; // Set to true to stop between steps for debugging.
+    boolean enableStops = false; // Set to true to stop between steps for debugging.
 
     // constant for size of playing element
     double stoneLength = 7.0;
@@ -34,11 +34,13 @@ public class SkystoneAutoJan extends LinearOpMode {
             robot.stopDrive();
             if (gamepad1.y) break;
             //updateSensors();
+            sleep(250);
         }
         while (true) {
             robot.stopDrive();
             if (!gamepad1.y) break;
             // updateSensors();
+            sleep(250);
         }
     }
 
@@ -58,11 +60,12 @@ public class SkystoneAutoJan extends LinearOpMode {
         imu.correctHeading( turnToFaceStones, robot, this );
 
         // Creep until get into the Yellow.
-        robot.driveToColorInsideEdge(Hardware.Direction.RIGHT, 6.0, this);
+        robot.driveToColorInsideEdge(Hardware.Direction.RIGHT, 8.0, this);
+
         waitForYellow();
 
         // Strafe to where we came from to get the grabber centered.
-        robot.moveRampToPosition("right", .2, 2, robot, this, time);
+        robot.moveRampToPosition("right", .2, 3, robot, this, time);
         //waitForYellow();
 
         // Backward (toward stone)  to be ready to grab that stone.
@@ -158,7 +161,7 @@ public class SkystoneAutoJan extends LinearOpMode {
         //waitForYellow();
 
         // Go toward bridge a tiny bit to be right in front of stone #1.
-        robot.moveRampToPosition("backward", .4, 3, robot, this, time);
+        robot.moveRampToPosition("backward", .4, 4.5, robot, this, time);
         //waitForYellow();
 
         // Rotate the robot so the back (sensor / manipulator) side faces stones.
@@ -167,7 +170,7 @@ public class SkystoneAutoJan extends LinearOpMode {
         //waitForYellow();
 
         // Go toward the stone (backward) to just a few inches fron stone #1.
-        robot.moveRampToPosition("backward", .3, 11, robot, this, time);
+        robot.moveRampToPosition("backward", .3, 12, robot, this, time);
         //waitForYellow();
 
         seekForStone();
@@ -180,13 +183,20 @@ public class SkystoneAutoJan extends LinearOpMode {
 
         // Drop the stone and park under the bridge.
         robot.resetLeftAutoManipulator();
-        imu.correctHeading(turnToFaceStones, robot, this);
+        // give it time to let go of the block:
+        sleep(500);
+        //imu.correctHeading(turnToFaceStones, robot, this);
         //distanceToGo = 36 + 2.0 * stoneLength * ( (double) targetStoneNumber - 1.0)
         distanceToGo = 9;
-        robot.moveRampToPosition("left", .6, distanceToGo + 40, robot, this, time);
+        robot.moveRampToPosition("left", .8, distanceToGo + 44, robot, this, time);
+        imu.correctHeading(turnToFaceStones, robot, this);
         waitForYellow();
 
-        // approach the blocks again.7, 12, robot, this, time);
+        // approach the blocks again.
+        robot.moveRampToPosition("backward", .5, 8, robot, this, time);
+        targetStoneNumber = 0;
         seekForStone();
+        distanceToGo = 40;
+        robot.moveRampToPosition("right", .8, distanceToGo, robot, this, time);
     }
 }
