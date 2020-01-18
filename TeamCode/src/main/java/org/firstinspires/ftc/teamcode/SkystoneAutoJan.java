@@ -185,6 +185,12 @@ public class SkystoneAutoJan extends LinearOpMode {
         robot.resetLeftAutoManipulator();
         // give it time to let go of the block:
         sleep(500);
+
+        // park under the bridge, we don't have time:
+        if (targetStoneNumber == 3) {
+            robot.moveRampToPosition("left", .5, 10, robot, this, time);
+        }
+
         //imu.correctHeading(turnToFaceStones, robot, this);
         //distanceToGo = 36 + 2.0 * stoneLength * ( (double) targetStoneNumber - 1.0)
         distanceToGo = 9;
