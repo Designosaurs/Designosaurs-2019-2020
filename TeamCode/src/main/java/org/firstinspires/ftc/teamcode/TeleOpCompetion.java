@@ -98,7 +98,7 @@ public class TeleOpCompetion extends OpMode {
         // Lift up => negative values of encoder.
         // Negative power => ift up.
         // Gamepad X functions as an override limit.
-        if (Robot.limitSwitch.isPressed()) {
+        if (Robot.limitSwitch.isPressed() || Robot.liftMotor.getCurrentPosition() >= 0) {
             // Limit switch is pressed, so may only go up.
             Robot.liftMotor.setPower(Math.min(0, gamepad2.left_stick_y));
         } else if (Robot.liftMotor.getCurrentPosition() <= -4650) {
