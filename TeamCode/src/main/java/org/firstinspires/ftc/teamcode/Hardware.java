@@ -198,6 +198,25 @@ public class Hardware {
         return false;
     }
 
+    boolean driveToProxSpeed(double targetProx, double speed, double TimeoutSecs, LinearOpMode opMode) {
+        double startTime = time.now(TimeUnit.MILLISECONDS);
+        double Prox = 1000;
+        while (time.now(TimeUnit.MILLISECONDS) - startTime < TimeoutSecs * 1000) {
+            runDirection(speed, Direction.BACKWARD, true);
+            Prox = sensorDistance.getDistance(DistanceUnit.CM);
+            opMode.telemetry.addData("Doing", "driveToProx");
+            opMode.telemetry.addData("Prox (cm)",
+                    String.format(Locale.US, "%.01f", Prox));
+            opMode.telemetry.update();
+            if (Prox < targetProx) {
+                stopDrive();
+                return true;
+            }
+        }
+        stopDrive();
+        return false;
+    }
+
     // Creep slowly until the color sensor detects a transition, denoting the edge of the
     // target on the skystone.
     // We look only for red as that appears to have the greatest contrast.
