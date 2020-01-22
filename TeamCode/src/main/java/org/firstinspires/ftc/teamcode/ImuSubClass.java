@@ -66,12 +66,13 @@ public class ImuSubClass {
     // make a final adjustment.  It will return right away if no correction
     // is needed.
     void correctHeading( double degrees, Hardware robot, LinearOpMode opMode){
+        ReadIMU();
         double degError = Math.abs( getHeading() - degrees);
         // If less than 2 degrees off, return without doing anything.
-        if ( degError < 2.0){
+        if (degError < 2) {
             return;
         }
-        turnSimp(degrees, .05, robot, opMode);
+        turnSimp(degrees, .03, robot, opMode);
     }
 
     // This really only works on 90 degree turns!
@@ -84,6 +85,7 @@ public class ImuSubClass {
             turnSimp(degrees + 30, .4, robot, opMode);
         }
         // turnSimp(degrees, .1, robot, opMode);
+        turnSimp(degrees, .05, robot, opMode);
         turnSimp(degrees, .05, robot, opMode);
     }
 

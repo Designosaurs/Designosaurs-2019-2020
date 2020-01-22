@@ -20,6 +20,7 @@ public class TestSensors extends LinearOpMode {
     float[] hsvValues = {0F, 0F, 0F};
     // values is a reference to the hsvValues array.
     final float[] values = hsvValues;
+    double imuValue = imu.getHeading();
 
     @Override
     public void runOpMode() {
@@ -34,13 +35,18 @@ public class TestSensors extends LinearOpMode {
                     (int) (robot.sensorColor.blue() * SCALE_FACTOR),
                     hsvValues);
 
+            double RGtoBRatio;
+            RGtoBRatio = ((double) robot.sensorColor.red() + (double) robot.sensorColor.green()) / (double) robot.sensorColor.blue();
+
             // send the info back to driver station using telemetry function.
             telemetry.addData("Green", "Exit loop");
             telemetry.addData("Alpha", robot.sensorColor.alpha());
-            telemetry.addData("Red  ", robot.sensorColor.red());
+            telemetry.addData("Red ", robot.sensorColor.red());
             telemetry.addData("Green", robot.sensorColor.green());
             telemetry.addData("Blue ", robot.sensorColor.blue());
+            telemetry.addData("RGtoBRaion", RGtoBRatio);
             telemetry.addData("Hue", hsvValues[0]);
+            telemetry.addData("Heading", imuValue);
 
             telemetry.addData("Prox (cm)",
                     String.format(Locale.US, "%.01f", robot.sensorDistance.getDistance(DistanceUnit.CM)));

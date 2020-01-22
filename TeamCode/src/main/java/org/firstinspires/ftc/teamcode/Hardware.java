@@ -168,7 +168,7 @@ public class Hardware {
         opMode.telemetry.addData( "RGtoBRaion", RGtoBRatio);
         opMode.telemetry.update();
 
-        return RGtoBRatio > 4.0;
+        return RGtoBRatio > 3.0;
         //  return red > 55;
     }
 
@@ -183,7 +183,7 @@ public class Hardware {
         double startTime = time.now(TimeUnit.MILLISECONDS);
         double Prox = 1000;
         while (time.now(TimeUnit.MILLISECONDS) - startTime < TimeoutSecs * 1000) {
-            runDirection(0.05, Direction.BACKWARD, true);
+            runDirection(0.07, Direction.BACKWARD, true);
             Prox = sensorDistance.getDistance(DistanceUnit.CM);
             opMode.telemetry.addData("Doing", "driveToProx");
             opMode.telemetry.addData("Prox (cm)",

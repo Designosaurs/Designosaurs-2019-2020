@@ -88,18 +88,19 @@ public class FoundationAutoJan extends LinearOpMode {
             sleep((100));
             robot.moveRampToPosition("backward", .4, 20, robot, this, time);
             imu.correctHeading(90, robot, this);
-            robot.moveRampToPosition("backward", .1, 7, robot, this, time);
+            robot.moveRampToPosition("backward", .1, 10, robot, this, time);
 
             // Grab foundation and move it into the building site
             robot.foundationGripper.setPosition(0.9);
             sleep(100);
-            robot.moveRampToPosition("forward", .4, 20, robot, this, time);
-            robot.moveRampToPosition("forward", .1, 9, robot, this, time);
+            robot.moveRampToPosition("forward", .4, 23, robot, this, time);
+            robot.moveRampToPosition("forward", .1, 11, robot, this, time);
 
             // Let go and park under the skybridge
             robot.foundationGripper.setPosition(0.67);
             sleep(200);
             robot.moveRampToPosition("left", .4, 23, robot, this, time);
+            sleep(5000);
             imu.turnAndCorrect(0, robot, this);
             robot.moveRampToPosition("backward", .4, 22, robot, this, time);
         } else if (teamColorBlue == false) {
@@ -118,18 +119,19 @@ public class FoundationAutoJan extends LinearOpMode {
             sleep(100);
             robot.moveRampToPosition("backward", .4, 22, robot, this, time);
             imu.correctHeading(-90, robot, this);
-            robot.moveRampToPosition("backward", .1, 7, robot, this, time);
+            robot.moveRampToPosition("backward", .1, 10, robot, this, time);
 
             // Grab foundation and move it into the building site
             robot.foundationGripper.setPosition(0.9);
             sleep(100);
-            robot.moveRampToPosition("forward", .4, 20, robot, this, time);
-            robot.moveRampToPosition("forward", .1, 9, robot, this, time);
+            robot.moveRampToPosition("forward", .4, 23, robot, this, time);
+            robot.moveRampToPosition("forward", .1, 11, robot, this, time);
 
             // Let go and park under the skybridge
             robot.foundationGripper.setPosition(0.67);
             sleep(200);
             robot.moveRampToPosition("right", .4, 23, robot, this, time);
+            sleep(1000);
             imu.turnAndCorrect(0, robot, this);
             robot.moveRampToPosition("backward", .4, 22, robot, this, time);
         }

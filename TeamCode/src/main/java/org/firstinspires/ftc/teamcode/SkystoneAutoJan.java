@@ -16,7 +16,7 @@ public class SkystoneAutoJan extends LinearOpMode {
     boolean teamColorBlue = true;
     boolean getSecondStone = true;
     boolean secondTimeAround = false;
-    boolean truncateAfterOne = false;
+    boolean truncateAfterOne = true;
 
     // constant for size of playing element
     double stoneLength = 7.0;
@@ -55,7 +55,7 @@ public class SkystoneAutoJan extends LinearOpMode {
         if (teamColorBlue) {
             robot.driveToProx(6.0, 6.0, this);
         } else {
-            robot.driveToProx(9.0, 6.0, this);
+            robot.driveToProx(6.0, 6.0, this);
         }
         waitForYellow();
 
@@ -81,7 +81,7 @@ public class SkystoneAutoJan extends LinearOpMode {
 
         // Strafe to where we came from to get the grabber centered.
         if (teamColorBlue) {
-            robot.moveRampToPosition(inside, .2, 3, robot, this, time);
+            robot.moveRampToPosition(inside, .2, 2.7, robot, this, time);
         } else {
             robot.moveRampToPosition(inside, .2, 1, robot, this, time);
         }
@@ -140,7 +140,7 @@ public class SkystoneAutoJan extends LinearOpMode {
             waitForYellow();
             // Back a tiny bit
             robot.moveRampToPosition("forward", .4, 1, robot, this, time);
-            // Move to outside
+            imu.correctHeading(turnToFaceStones, robot, this);            // Move to outside
             robot.moveRampToPosition(outside, .4, stoneLength, robot, this, time);
             waitForYellow();
 
@@ -155,6 +155,7 @@ public class SkystoneAutoJan extends LinearOpMode {
             waitForYellow();
             // Back a tiny bit
             robot.moveRampToPosition("forward", .3, 1, robot, this, time);
+            imu.correctHeading(turnToFaceStones, robot, this);
             // Move to outside
             robot.moveRampToPosition(outside, .3, stoneLength, robot, this, time);
             waitForYellow();
@@ -225,9 +226,9 @@ public class SkystoneAutoJan extends LinearOpMode {
 
         // Go toward bridge a tiny bit to be right in front of stone #1.
         if (teamColorBlue) {
-            robot.moveRampToPosition("backward", .4, 4.5, robot, this, time);
+            robot.moveRampToPosition("backward", .4, 0.5, robot, this, time);
         } else {
-            robot.moveRampToPosition("backward", .4, 7.5, robot, this, time);
+            robot.moveRampToPosition("backward", .4, 0.5, robot, this, time);
         }
         //waitForYellow();
 
