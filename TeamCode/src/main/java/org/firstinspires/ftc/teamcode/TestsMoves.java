@@ -37,6 +37,9 @@ public class TestsMoves extends LinearOpMode {
         imu.init(hardwareMap);
 
         waitForStart();
+        robot.driveToSkystoneEdge(Hardware.Direction.LEFT, 10000, this);
+        waitForYellow();
+        //robot.moveRampToPosition("forward", 1, 24000, robot, this, time);
         imu.ReadIMU();
 
         // Rotate the robot so the back (sensor / manipulator) side faces stones.

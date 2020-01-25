@@ -182,7 +182,7 @@ public class Hardware {
     boolean driveToProx(double targetProx, double TimeoutSecs, LinearOpMode opMode) {
         double startTime = time.now(TimeUnit.MILLISECONDS);
         double Prox = 1000;
-        while (time.now(TimeUnit.MILLISECONDS) - startTime < TimeoutSecs * 1000) {
+        while (time.now(TimeUnit.MILLISECONDS) - startTime < TimeoutSecs * 1000 && opMode.opModeIsActive()) {
             runDirection(0.07, Direction.BACKWARD, true);
             Prox = sensorDistance.getDistance(DistanceUnit.CM);
             opMode.telemetry.addData("Doing", "driveToProx");
@@ -201,7 +201,7 @@ public class Hardware {
     boolean driveToProxSpeed(double targetProx, double speed, double TimeoutSecs, LinearOpMode opMode) {
         double startTime = time.now(TimeUnit.MILLISECONDS);
         double Prox = 1000;
-        while (time.now(TimeUnit.MILLISECONDS) - startTime < TimeoutSecs * 1000) {
+        while (time.now(TimeUnit.MILLISECONDS) - startTime < TimeoutSecs * 1000 && opMode.opModeIsActive()) {
             runDirection(speed, Direction.BACKWARD, true);
             Prox = sensorDistance.getDistance(DistanceUnit.CM);
             opMode.telemetry.addData("Doing", "driveToProx");
@@ -248,7 +248,7 @@ public class Hardware {
                 }
 
             opMode.telemetry.update();
-        } while (encDist < maxDistance);
+        } while (encDist < maxDistance && opMode.opModeIsActive());
         stopDrive();
         return false;
     }
@@ -293,11 +293,46 @@ public class Hardware {
                 return true;
             }
             opMode.telemetry.update();
-        } while (encDist < maxDistance);
+        } while (encDist < maxDistance && opMode.opModeIsActive());
         stopDrive();
         return false;
     }
 
+    boolean driveToSkystoneEdge(Direction direction, double maxDistance,
+                                LinearOpMode opMode) {
+
+        double encDist = 0;
+        int encReading = 0;
+        setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER); //Reset all encoders.
+
+        // Run until we see that edge, or maxDistane, whichever is first.
+        do {
+            runDirection(0.1, direction, true);
+            double Prox = 1000;
+
+            opMode.telemetry.addData("Doing", "driveToSkystoneEdge");
+            encReading = frontLeft.getCurrentPosition();
+            opMode.telemetry.addData("fl enc", encReading);
+            opMode.telemetry.addData("See Yellow:", seesYellow(opMode));
+            encDist = Math.abs(((double) encReading) * INCHES_PER_ENCODER_TICK);
+            opMode.telemetry.addData("Dist ",
+                    String.format(Locale.US, "%.01f", encDist));
+
+            // Stop if we see yellow.
+            if (!seesYellow(opMode)) {
+                stopDrive();
+                opMode.telemetry.update();
+                return true;
+            }
+
+            // Also stop if we see air
+            Prox = sensorDistance.getDistance(DistanceUnit.CM);
+            opMode.telemetry.addData("Prox", Prox);
+            opMode.telemetry.update();
+        } while (encDist < maxDistance && opMode.opModeIsActive());
+        stopDrive();
+        return false;
+    }
 
 
 
