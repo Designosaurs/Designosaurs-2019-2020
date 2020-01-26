@@ -17,12 +17,12 @@ public class TestsMoves extends LinearOpMode {
     //  Add these as needed so you can setp through the critical parts.
     private void waitForYellow() {
         if (!enabableStops) return;
-        while (true) {
+        while (true && opModeIsActive()) {
             robot.stopDrive();
             if (gamepad1.y) break;
             //updateSensors();
         }
-        while (true) {
+        while (true && opModeIsActive()) {
             robot.stopDrive();
             if (!gamepad1.y) break;
             // updateSensors();
@@ -37,6 +37,8 @@ public class TestsMoves extends LinearOpMode {
         imu.init(hardwareMap);
 
         waitForStart();
+        robot.correctProx(6.0, 50000, this);
+        sleep(20000000);
         robot.driveToSkystoneEdge(Hardware.Direction.LEFT, 10000, this);
         waitForYellow();
         //robot.moveRampToPosition("forward", 1, 24000, robot, this, time);

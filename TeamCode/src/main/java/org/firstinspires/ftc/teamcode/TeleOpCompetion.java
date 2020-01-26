@@ -101,7 +101,7 @@ public class TeleOpCompetion extends OpMode {
         if (Robot.limitSwitch.isPressed() || Robot.liftMotor.getCurrentPosition() >= 0) {
             // Limit switch is pressed, so may only go up.
             Robot.liftMotor.setPower(Math.min(0, gamepad2.left_stick_y));
-        } else if (Robot.liftMotor.getCurrentPosition() <= -4650) {
+        } else if (Robot.liftMotor.getCurrentPosition() <= -9050) {
             // Hit endocder limit.  So, may only go down.
             Robot.liftMotor.setPower(Math.max(0, gamepad2.left_stick_y));
         } else {

@@ -48,6 +48,10 @@ public class Hardware {
     public double minSpeed = .2;
     public double sideBias = Math.sqrt(2);
     public int power = 3;
+
+    public double skystoneEncoderInitial = 0;
+    public double skystoneEncoderEnd = 0;
+
     HardwareMap hwMap = null;
     private ElapsedTime time = new ElapsedTime();
 
@@ -198,6 +202,42 @@ public class Hardware {
         return false;
     }
 
+    boolean correctProx(double targetProx, double TimeoutSecs, LinearOpMode opMode) {
+        double startTime = time.now(TimeUnit.MILLISECONDS);
+        double Prox = 1000;
+        Prox = sensorDistance.getDistance(DistanceUnit.CM);
+        Prox = sensorDistance.getDistance(DistanceUnit.CM);
+        if (targetProx >= Prox) {
+            while (time.now(TimeUnit.MILLISECONDS) - startTime < TimeoutSecs * 1000 && opMode.opModeIsActive()) {
+                runDirection(0.07, Direction.FORWARD, true);
+                Prox = sensorDistance.getDistance(DistanceUnit.CM);
+                opMode.telemetry.addData("Doing", "driveToProx");
+                opMode.telemetry.addData("Prox (cm)",
+                        String.format(Locale.US, "%.01f", Prox));
+                opMode.telemetry.update();
+                if (Prox < targetProx) {
+                    stopDrive();
+                    return true;
+                }
+            }
+        } else if (targetProx <= Prox) {
+            while (time.now(TimeUnit.MILLISECONDS) - startTime < TimeoutSecs * 1000 && opMode.opModeIsActive()) {
+                runDirection(0.07, Direction.BACKWARD, true);
+                Prox = sensorDistance.getDistance(DistanceUnit.CM);
+                opMode.telemetry.addData("Doing", "driveToProx");
+                opMode.telemetry.addData("Prox (cm)",
+                        String.format(Locale.US, "%.01f", Prox));
+                opMode.telemetry.update();
+                if (Prox > targetProx) {
+                    stopDrive();
+                    return true;
+                }
+            }
+        }
+        stopDrive();
+        return false;
+    }
+
     boolean driveToProxSpeed(double targetProx, double speed, double TimeoutSecs, LinearOpMode opMode) {
         double startTime = time.now(TimeUnit.MILLISECONDS);
         double Prox = 1000;
@@ -304,6 +344,8 @@ public class Hardware {
         double encDist = 0;
         int encReading = 0;
         setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER); //Reset all encoders.
+        skystoneEncoderInitial = frontLeft.getCurrentPosition();
+
 
         // Run until we see that edge, or maxDistane, whichever is first.
         do {
@@ -322,6 +364,7 @@ public class Hardware {
             if (!seesYellow(opMode)) {
                 stopDrive();
                 opMode.telemetry.update();
+                skystoneEncoderEnd = frontLeft.getCurrentPosition();
                 return true;
             }
 

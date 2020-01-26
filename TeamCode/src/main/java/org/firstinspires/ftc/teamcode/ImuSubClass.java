@@ -72,7 +72,11 @@ public class ImuSubClass {
         if (degError < 2) {
             return;
         }
-        turnSimp(degrees, .03, robot, opMode);
+        if (degrees >= 0) {
+            turnSimp(degrees + 1, .03, robot, opMode);
+        } else {
+            turnSimp(degrees - 1, .03, robot, opMode);
+        }
     }
 
     // This really only works on 90 degree turns!
