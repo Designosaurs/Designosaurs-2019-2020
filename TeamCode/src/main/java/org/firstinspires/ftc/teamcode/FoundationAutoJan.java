@@ -19,6 +19,7 @@ public class FoundationAutoJan extends LinearOpMode {
 
     boolean teamColorBlue = true;
 
+
     // Debugging aid-- wait for press of green button (a).
     //  Add these as needed so you can setp through the critical parts.
     private void waitForGreen() {

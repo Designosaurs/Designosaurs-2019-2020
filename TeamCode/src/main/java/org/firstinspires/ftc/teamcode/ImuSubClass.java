@@ -73,9 +73,31 @@ public class ImuSubClass {
             return;
         }
         if (degrees >= 0) {
-            turnSimp(degrees + 1, .03, robot, opMode);
+            if (heading > degrees) {
+                turnSimp(degrees + 1, .15, robot, opMode);
+            } else {
+                turnSimp(degrees - 1, .15, robot, opMode);
+            }
         } else {
-            turnSimp(degrees - 1, .03, robot, opMode);
+            if (heading > degrees) {
+                turnSimp(degrees + 1, .15, robot, opMode);
+            } else {
+                turnSimp(degrees - 1, .15, robot, opMode);
+            }
+        }
+    }
+
+    void correctHeadingNoMinus(double degrees, Hardware robot, LinearOpMode opMode) {
+        ReadIMU();
+        double degError = Math.abs(getHeading() - degrees);
+        // If less than 2 degrees off, return without doing anything.
+        if (degError < 2) {
+            return;
+        }
+        if (degrees >= 0) {
+            turnSimp(degrees, .03, robot, opMode);
+        } else {
+            turnSimp(degrees, .03, robot, opMode);
         }
     }
 
