@@ -74,32 +74,19 @@ public class ImuSubClass {
         }
         if (degrees >= 0) {
             if (heading > degrees) {
-                turnSimp(degrees + 1, .15, robot, opMode);
+                turnSimp(degrees + 1, .12, robot, opMode);
             } else {
-                turnSimp(degrees - 1, .15, robot, opMode);
+                turnSimp(degrees - 1, .12, robot, opMode);
             }
         } else {
             if (heading > degrees) {
-                turnSimp(degrees + 1, .15, robot, opMode);
+                turnSimp(degrees + 1, .12, robot, opMode);
             } else {
-                turnSimp(degrees - 1, .15, robot, opMode);
+                turnSimp(degrees - 1, .12, robot, opMode);
             }
         }
     }
 
-    void correctHeadingNoMinus(double degrees, Hardware robot, LinearOpMode opMode) {
-        ReadIMU();
-        double degError = Math.abs(getHeading() - degrees);
-        // If less than 2 degrees off, return without doing anything.
-        if (degError < 2) {
-            return;
-        }
-        if (degrees >= 0) {
-            turnSimp(degrees, .03, robot, opMode);
-        } else {
-            turnSimp(degrees, .03, robot, opMode);
-        }
-    }
 
     // This really only works on 90 degree turns!
     // The first turn is well short of the mark, and the last little bit is
