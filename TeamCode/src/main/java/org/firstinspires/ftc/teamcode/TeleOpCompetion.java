@@ -68,10 +68,10 @@ public class TeleOpCompetion extends OpMode {
             Robot.backRight.setPower(br / 3);
             Robot.backLeft.setPower(bl / 3);
         } else {
-            Robot.frontRight.setPower(fr);
-            Robot.frontLeft.setPower(fl);
-            Robot.backRight.setPower(br);
-            Robot.backLeft.setPower(bl);
+            Robot.frontRight.setPower(fr / 1.5);
+            Robot.frontLeft.setPower(fl / 1.5);
+            Robot.backRight.setPower(br / 1.5);
+            Robot.backLeft.setPower(bl / 1.5);
         }
 
         // set position of foundation manipulator

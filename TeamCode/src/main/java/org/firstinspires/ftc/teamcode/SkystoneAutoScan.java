@@ -94,7 +94,7 @@ public class SkystoneAutoScan extends LinearOpMode {
         if (targetStoneNumber == 1) {
             // It's really important that the distance the robot moves is different for red and blue because the color sensor is not in the exact center of the robot.
             if (teamColorBlue) {
-                robot.moveRampToPosition(inside, .2, 1.5, robot, this, time);
+                robot.moveRampToPosition(inside, .2, 3.5, robot, this, time);
             } else {
                 robot.moveRampToPosition(inside, 0.2, 1.5, robot, this, time);
             }
@@ -167,7 +167,6 @@ public class SkystoneAutoScan extends LinearOpMode {
             telemetry.addData("Second Stone Difference", getSecondStonePosition());
             telemetry.addData("Encoder Difference", skystoneEndoderDifference);
             telemetry.update();
-            sleep(10000);
             targetStoneNumber = getSecondStonePosition();
             waitForYellow();
             grabStone();
@@ -194,10 +193,18 @@ public class SkystoneAutoScan extends LinearOpMode {
 
     public int getSecondStonePosition() {
         skystoneEndoderDifference = Math.abs(robot.skystoneEncoderInitial - robot.skystoneEncoderEnd);
-        if (skystoneEndoderDifference >= 150 && skystoneEndoderDifference <= 250) {
-            return 2;
+        if (teamColorBlue) {
+            if (skystoneEndoderDifference >= 250 && skystoneEndoderDifference <= 350) {
+                return 2;
+            } else {
+                return 3;
+            }
         } else {
-            return 3;
+            if (skystoneEndoderDifference >= 150 && skystoneEndoderDifference <= 250) {
+                return 2;
+            } else {
+                return 3;
+            }
         }
     }
 
@@ -279,15 +286,14 @@ public class SkystoneAutoScan extends LinearOpMode {
 
         // SHUTTLE IT TO THE OTHER SIDE
         // Go under the bridge.
-
         if (teamColorBlue) {
             // If we're BLUE:
             if (targetStoneNumber == 1) {
-                distanceToGo = 28;
+                distanceToGo = 31;
             } else if (targetStoneNumber == 2) {
-                distanceToGo = 30;
+                distanceToGo = 38;
             } else {
-                distanceToGo = 46;
+                distanceToGo = 45;
             }
         } else {
             // If we're RED:
