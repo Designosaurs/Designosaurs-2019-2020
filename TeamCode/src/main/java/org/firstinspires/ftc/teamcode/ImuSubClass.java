@@ -92,16 +92,37 @@ public class ImuSubClass {
     // The first turn is well short of the mark, and the last little bit is
     // to correct.
     void turnAndCorrect(double degrees, Hardware robot, LinearOpMode opMode) {
-        if (degrees >= 0) {
+        ReadIMU();
+        if (degrees > 0) {
             turnSimp(degrees - 30, .4, robot, opMode);
-            turnSimp(degrees - 3, .05, robot, opMode);
+            turnSimp(degrees - 2, .05, robot, opMode);
             robot.stopDrive();
             robot.delaySecs(0.1);
-        } else {
+            turnSimp(degrees, .05, robot, opMode);
+            robot.stopDrive();
+            robot.delaySecs(0.1);
+        } else if (degrees < 0) {
             turnSimp(degrees + 30, .4, robot, opMode);
             turnSimp(degrees + 3, .05, robot, opMode);
             robot.stopDrive();
             robot.delaySecs(0.1);
+            turnSimp(degrees, .05, robot, opMode);
+            robot.stopDrive();
+            robot.delaySecs(0.1);
+        } else {
+            if (heading < 0) {
+                turnSimp(degrees - 20, .4, robot, opMode);
+                turnSimp(degrees - 3, .05, robot, opMode);
+                turnSimp(degrees, .05, robot, opMode);
+                robot.stopDrive();
+                robot.delaySecs(0.1);
+            } else {
+                turnSimp(degrees + 20, .4, robot, opMode);
+                turnSimp(degrees + 3, .05, robot, opMode);
+                turnSimp(degrees, .05, robot, opMode);
+                robot.stopDrive();
+                robot.delaySecs(0.1);
+            }
         }
         // turnSimp(degrees, .1, robot, opMode);
         // turnSimp(degrees, .05, robot, opMode);
