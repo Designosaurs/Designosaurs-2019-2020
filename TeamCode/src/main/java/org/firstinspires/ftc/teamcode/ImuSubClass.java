@@ -94,12 +94,18 @@ public class ImuSubClass {
     void turnAndCorrect(double degrees, Hardware robot, LinearOpMode opMode) {
         if (degrees >= 0) {
             turnSimp(degrees - 30, .4, robot, opMode);
+            turnSimp(degrees - 3, .05, robot, opMode);
+            robot.stopDrive();
+            robot.delaySecs(0.1);
         } else {
             turnSimp(degrees + 30, .4, robot, opMode);
+            turnSimp(degrees + 3, .05, robot, opMode);
+            robot.stopDrive();
+            robot.delaySecs(0.1);
         }
         // turnSimp(degrees, .1, robot, opMode);
-        turnSimp(degrees, .05, robot, opMode);
-        turnSimp(degrees, .05, robot, opMode);
+        // turnSimp(degrees, .05, robot, opMode);
+        // turnSimp(degrees, .05, robot, opMode);
     }
 
 }

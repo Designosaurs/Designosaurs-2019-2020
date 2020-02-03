@@ -37,7 +37,14 @@ public class TestsMoves extends LinearOpMode {
         imu.init(hardwareMap);
 
         waitForStart();
-        robot.correctProx(6.0, 50000, this);
+        while (opModeIsActive()) {
+            imu.turnAndCorrect(90, robot, this);
+            waitForYellow();
+            imu.turnAndCorrect(0, robot, this);
+            waitForYellow();
+            imu.turnAndCorrect(-90, robot, this);
+            waitForYellow();
+        }
         sleep(20000000);
         robot.driveToSkystoneEdge(Hardware.Direction.LEFT, 10000, this);
         waitForYellow();
