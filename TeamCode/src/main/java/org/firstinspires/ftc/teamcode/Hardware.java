@@ -41,7 +41,9 @@ public class Hardware {
     public TouchSensor limitSwitch = null;
     public ColorSensor sensorColor = null;
     public DistanceSensor sensorDistance = null;  // This is the one built into the color sensor.  Not accurate.
-    public DistanceSensor sensorRange = null;      // The 2 Meter, accurate sensor.
+    public DistanceSensor sensorRangeFront = null;      // The 2 Meter, accurate sensor in the front.
+    public DistanceSensor sensorRangeRight = null;
+    public DistanceSensor sensorRangeLeft = null;
     public boolean flip = false;
     public double accelPerSec = .8;
     public double decelPGain = INCHES_PER_ENCODER_TICK / 45;
@@ -78,7 +80,9 @@ public class Hardware {
         capstoneGripper = hwMap.get(Servo.class, "capstone_manipulator");
 
         // Initialize Sensors
-        sensorRange = hwMap.get(DistanceSensor.class, "sensor_range");
+        sensorRangeFront = hwMap.get(DistanceSensor.class, "sensor_range_front");
+        sensorRangeRight = hwMap.get(DistanceSensor.class, "sensor_range_right");
+        sensorRangeLeft = hwMap.get(DistanceSensor.class, "sensor_range_left");
         try {
             limitSwitch = hwMap.get(TouchSensor.class, "touch_sensor");
 
@@ -251,6 +255,53 @@ public class Hardware {
             if (Prox < targetProx) {
                 stopDrive();
                 return true;
+            }
+        }
+        stopDrive();
+        return false;
+    }
+
+    boolean driveToRange(double targetRange, String direction, double speed, double TimeoutSecs, LinearOpMode opMode) {
+        double startTime = time.now(TimeUnit.MILLISECONDS);
+        double Range = 1000;
+        if (direction == "backward") {
+            while (time.now(TimeUnit.MILLISECONDS) - startTime < TimeoutSecs * 1000 && opMode.opModeIsActive()) {
+                runDirection(speed, Direction.BACKWARD, true);
+                Range = sensorRangeFront.getDistance(DistanceUnit.INCH);
+                opMode.telemetry.addData("Doing", "driveToRange");
+                opMode.telemetry.addData("Range Front (in)",
+                        String.format(Locale.US, "%.01f", Range));
+                opMode.telemetry.update();
+                if (Range < targetRange) {
+                    stopDrive();
+                    return true;
+                }
+            }
+        } else if (direction == "right") {
+            while (time.now(TimeUnit.MILLISECONDS) - startTime < TimeoutSecs * 1000 && opMode.opModeIsActive()) {
+                runDirection(speed, Direction.RIGHT, true);
+                Range = sensorRangeRight.getDistance(DistanceUnit.INCH);
+                opMode.telemetry.addData("Doing", "driveToRange");
+                opMode.telemetry.addData("Range Right (in)",
+                        String.format(Locale.US, "%.01f", Range));
+                opMode.telemetry.update();
+                if (Range < targetRange) {
+                    stopDrive();
+                    return true;
+                }
+            }
+        } else {
+            while (time.now(TimeUnit.MILLISECONDS) - startTime < TimeoutSecs * 1000 && opMode.opModeIsActive()) {
+                runDirection(speed, Direction.LEFT, true);
+                Range = sensorRangeLeft.getDistance(DistanceUnit.INCH);
+                opMode.telemetry.addData("Doing", "driveToRange");
+                opMode.telemetry.addData("Range Left (in)",
+                        String.format(Locale.US, "%.01f", Range));
+                opMode.telemetry.update();
+                if (Range < targetRange) {
+                    stopDrive();
+                    return true;
+                }
             }
         }
         stopDrive();

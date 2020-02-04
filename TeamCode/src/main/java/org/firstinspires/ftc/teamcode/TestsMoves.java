@@ -37,6 +37,14 @@ public class TestsMoves extends LinearOpMode {
         imu.init(hardwareMap);
 
         waitForStart();
+        robot.driveToRange(6.0, "backward", 0.1, 5000, this);
+        waitForYellow();
+        robot.driveToRange(6.0, "right", 0.1, 5000, this);
+        waitForYellow();
+        robot.driveToRange(6.0, "left", 0.1, 5000, this);
+
+        sleep(100000);
+
         while (opModeIsActive()) {
             imu.turnAndCorrect(90, robot, this);
             waitForYellow();

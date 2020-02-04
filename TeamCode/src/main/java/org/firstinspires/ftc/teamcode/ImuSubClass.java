@@ -93,22 +93,22 @@ public class ImuSubClass {
     // to correct.
     void turnAndCorrect(double degrees, Hardware robot, LinearOpMode opMode) {
         ReadIMU();
-        if (degrees > 0) {
+        if (degrees > 45) {
             turnSimp(degrees - 30, .4, robot, opMode);
             turnSimp(degrees - 2, .05, robot, opMode);
             robot.stopDrive();
             robot.delaySecs(0.1);
             turnSimp(degrees, .05, robot, opMode);
             robot.stopDrive();
-            robot.delaySecs(0.1);
-        } else if (degrees < 0) {
+            robot.delaySecs(0.05);
+        } else if (degrees < -45) {
             turnSimp(degrees + 30, .4, robot, opMode);
             turnSimp(degrees + 3, .05, robot, opMode);
             robot.stopDrive();
             robot.delaySecs(0.1);
             turnSimp(degrees, .05, robot, opMode);
             robot.stopDrive();
-            robot.delaySecs(0.1);
+            robot.delaySecs(0.05);
         } else {
             if (heading < 0) {
                 turnSimp(degrees - 20, .4, robot, opMode);

@@ -56,9 +56,9 @@ public class SkystoneAutoScan extends LinearOpMode {
     // Will leave the bot right next to the stone.
     boolean checkForTarget() {
         if (teamColorBlue) {
-            robot.driveToProx(6.0, 6.0, this);
+            robot.driveToRange(2.0, "backward", 0.1, 3, this);
         } else {
-            robot.driveToProx(6.0, 6.0, this);
+            robot.driveToRange(2.0, "backward", 0.1, 3, this);
         }
         waitForYellow();
 
@@ -163,7 +163,6 @@ public class SkystoneAutoScan extends LinearOpMode {
             } else {
                 robot.driveToSkystoneEdge(Hardware.Direction.RIGHT, 750, this);
             }
-            robot.driveToProx(6.0, 1000, this);
             telemetry.addData("Second Stone Difference", getSecondStonePosition());
             telemetry.addData("Encoder Difference", skystoneEndoderDifference);
             telemetry.update();
@@ -253,7 +252,7 @@ public class SkystoneAutoScan extends LinearOpMode {
 
         // POSITION IN FRONT OF FIRST STONE
         // Strafe away from wall.
-        robot.moveRampToPosition(outside, .9, 13.5, robot, this, time);
+        robot.moveRampToPosition(outside, .9, 18.5, robot, this, time);
         //waitForYellow();
 
         // Go toward bridge a tiny bit to be right in front of stone #1.
@@ -269,10 +268,15 @@ public class SkystoneAutoScan extends LinearOpMode {
         imu.turnAndCorrect(turnToFaceStones, robot, this);
         robot.stopDrive();
         sleep(50);
+        imu.correctHeading(turnToFaceStones, robot, this);
+        robot.stopDrive();
+        sleep(50);
         //waitForYellow();
 
         // Go toward the stone (backward) to just a few inches fron stone #1.
-        robot.driveToProxSpeed(40, 0.15, 2.0, this);
+        //robot.driveToProxSpeed(40, 0.15, 2.0, this);
+        robot.driveToRange(2, "backward", 0.1, 3, this);
+        robot.moveRampToPosition("backward", 0.05, 0.5, robot, this, time);
 
 
         imu.correctHeading(turnToFaceStones, robot, this);

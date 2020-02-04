@@ -28,7 +28,7 @@ public class TestSensors extends LinearOpMode {
         robot.init2(hardwareMap, 0, 0, 0);
 
         waitForStart();
-        while (true) {
+        while (opModeIsActive()) {
 
             Color.RGBToHSV((int) (robot.sensorColor.red() * SCALE_FACTOR),
                     (int) (robot.sensorColor.green() * SCALE_FACTOR),
@@ -51,7 +51,9 @@ public class TestSensors extends LinearOpMode {
             telemetry.addData("Prox (cm)",
                     String.format(Locale.US, "%.01f", robot.sensorDistance.getDistance(DistanceUnit.CM)));
 
-            telemetry.addData("Range (In)", "%.01f", robot.sensorRange.getDistance(DistanceUnit.INCH));
+            telemetry.addData("Range Front (In)", "%.01f", robot.sensorRangeFront.getDistance(DistanceUnit.INCH));
+            telemetry.addData("Range Right (In)", "%.01f", robot.sensorRangeRight.getDistance(DistanceUnit.INCH));
+            telemetry.addData("Range Left (In)", "%.01f", robot.sensorRangeLeft.getDistance(DistanceUnit.INCH));
 
             // telemetry.addData("Dist",robot.getDistance());
             telemetry.update();
