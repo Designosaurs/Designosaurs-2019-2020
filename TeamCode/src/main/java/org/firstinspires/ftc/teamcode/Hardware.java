@@ -452,6 +452,11 @@ public class Hardware {
         backLeft.setPower(0);
     }
 
+    public void brake() {
+        stopDrive();
+        delaySecs(0.05);
+    }
+
     public void moveRampToPosition(String direction, double maxSpeed, double distance, Hardware Robot, LinearOpMode opMode, ElapsedTime time) {
         // this function moves the specified number of inches in the given direction using acceleration ramps along with the built-in PIDs
         double encDist = distance / INCHES_PER_ENCODER_TICK; // calculate distance in encoder counts
