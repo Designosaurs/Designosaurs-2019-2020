@@ -16,7 +16,7 @@ public class SkystoneAutoScan extends LinearOpMode {
     boolean teamColorBlue = true;
     boolean getSecondStone = true;
     boolean secondTimeAround = false;
-    boolean truncateAfterOne = false;
+    boolean truncateAfterOne = true; // Determines whether or not we go for a second stone.
 
     // constant for size of playing element
     double stoneLength = 7.0;
@@ -31,6 +31,7 @@ public class SkystoneAutoScan extends LinearOpMode {
     String inside = "right";
     String outside = "left";
     double turnToFaceStones = -90;
+    double slightlyIn = -85;
 
 
     // Debugging aid-- wait for press of green button (a).
@@ -191,7 +192,7 @@ public class SkystoneAutoScan extends LinearOpMode {
     public int getSecondStonePosition() {
         skystoneEndoderDifference = Math.abs(robot.skystoneEncoderInitial - robot.skystoneEncoderEnd);
         if (teamColorBlue) {
-            if (skystoneEndoderDifference >= 250 && skystoneEndoderDifference <= 350) {
+            if (skystoneEndoderDifference >= 100 && skystoneEndoderDifference <= 340) {
                 return 2;
             } else {
                 return 3;
@@ -227,12 +228,14 @@ public class SkystoneAutoScan extends LinearOpMode {
                 inside = "right";
                 outside = "left";
                 turnToFaceStones = -90;
+                slightlyIn = -85;
             }
             if (gamepad1.b) {
                 teamColorBlue = false;
                 inside = "left";
                 outside = "right";
                 turnToFaceStones = 90;
+                slightlyIn = 80;
             }
             if (teamColorBlue) {
                 telemetry.addData("Team Color>", "BLUE BLUE BLUE");
@@ -250,7 +253,7 @@ public class SkystoneAutoScan extends LinearOpMode {
 
         // POSITION IN FRONT OF FIRST STONE
         // Strafe away from wall.
-        robot.moveRampToPosition(outside, .9, 18.5, robot, this, time);
+        robot.moveRampToPosition(outside, .9, 20.5, robot, this, time);
         //waitForYellow();
 
         // Go toward bridge a tiny bit to be right in front of stone #1.
@@ -270,9 +273,9 @@ public class SkystoneAutoScan extends LinearOpMode {
         //waitForYellow();
 
         // Go toward the stone (backward) to just a few inches from stone #1. If it fails to see the stones, we'll park under the bridge
-        robot.driveToRange(4, "backward", 0.2, 1, this);
-        robot.brake();
-        if (!robot.driveToRange(2, "backward", 0.1, 3, this)) {
+        //robot.driveToRange(6, "backward", 0.2, 1, this);
+        // robot.brake();
+        if (!robot.driveToRange(2, "backward", 0.10, 3, this)) {
             robot.moveRampToPosition("forward", 0.3, 18, robot, this, time);
             robot.moveRampToPosition(inside, 0.3, 26, robot, this, time);
             sleep(100000);
@@ -312,7 +315,7 @@ public class SkystoneAutoScan extends LinearOpMode {
                 distanceToGo = 46;
             }
         }
-        robot.moveRampToPosition(inside, .7, distanceToGo, robot, this, time);
+        robot.moveRampToPosition(inside, 1.0, distanceToGo, robot, this, time);
         waitForYellow();
 
         // Let go of the stone
@@ -341,21 +344,32 @@ public class SkystoneAutoScan extends LinearOpMode {
 
         if (getSecondStone) {
             double distanceFromWall = 0;
+            double distanceToShuttle = 0;
             if (targetStoneNumber == 1) {
                 robot.moveRampToPosition(outside, 1, 50, robot, this, time);
                 distanceFromWall = 20;
+                distanceToShuttle = 50;
             }
             if (targetStoneNumber == 2) {
                 robot.moveRampToPosition(outside, 1, 56, robot, this, time);
                 distanceFromWall = 12;
-            } else {
+                distanceToShuttle = 58;
+            } else if (targetStoneNumber == 3) {
                 robot.moveRampToPosition(outside, 1, 62, robot, this, time);
-                distanceFromWall = 3;
+                distanceFromWall = 6;
+                distanceToShuttle = 66;
             }
-            robot.driveToRange(distanceFromWall, outside, 0.1, 5, this);
-            waitForYellow();
-            robot.driveToRange(2, "backward", 0.1, 5, this);
-            robot.moveRampToPosition("backward", 0.05, 1, robot, this, time);
+            // Get to the right position to grab the second stone
+            robot.driveToRange(distanceFromWall, outside, 0.2, 5, this);
+            robot.brake();
+            imu.correctHeading(turnToFaceStones, robot, this);
+            robot.brake();
+            //sleep (5000);
+            //robot.moveRampToPosition("backward", 0.3, 4, robot, this, time);
+
+            // Approach the stone
+            robot.driveToRange(2, "backward", 0.3, 5, this);
+            robot.moveRampToPosition("backward", 0.1, 1, robot, this, time);
             if (teamColorBlue) {
                 robot.deployLeftAutoManipulator();
                 sleep(300);
@@ -363,7 +377,20 @@ public class SkystoneAutoScan extends LinearOpMode {
                 robot.deployRightAutoManipulator();
                 sleep(300);
             }
+            // Pull it out.
             robot.moveRampToPosition("forward", 0.5, 14, robot, this, time);
+            imu.correctHeading(slightlyIn, robot, this);
+            // Shuttle it under the bridge
+            robot.moveRampToPosition(inside, 1, distanceToShuttle, robot, this, time);
+            if (teamColorBlue) {
+                robot.resetLeftAutoManipulator();
+            } else {
+                robot.resetRightAutoManipulator();
+            }
+            // give it time to let go of the block:
+            sleep(200);
+            robot.moveRampToPosition(outside, .5, 16, robot, this, time);
+
         }
     }
 }

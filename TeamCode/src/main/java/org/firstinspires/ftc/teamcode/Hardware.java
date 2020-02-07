@@ -46,8 +46,7 @@ public class Hardware {
     public DistanceSensor sensorRangeLeft = null;
     public boolean flip = false;
     public double accelPerSec = .8;
-    public double decelPGain = INCHES_PER_ENCODER_TICK / 45;
-    public double minSpeed = .2;
+
     public double sideBias = Math.sqrt(2);
     public int power = 3;
 
@@ -457,9 +456,54 @@ public class Hardware {
         delaySecs(0.05);
     }
 
+    public void moveNoRamp(String direction, double speed, double distance, Hardware Robot, LinearOpMode opMode, ElapsedTime time) {
+        double encDist = distance / INCHES_PER_ENCODER_TICK; // calculate distance in encoder counts
+
+        Robot.frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER); // reset all encoders
+        Robot.frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        Robot.backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        Robot.backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        //set target positions based on direction
+        switch (direction) {
+            case "forward":
+                setTargetPos(Robot.frontLeft, -encDist);
+                setTargetPos(Robot.frontRight, -encDist);
+                setTargetPos(Robot.backLeft, encDist);
+                setTargetPos(Robot.backRight, encDist);
+                break;
+            case "backward":
+                setTargetPos(Robot.frontLeft, encDist);
+                setTargetPos(Robot.frontRight, encDist);
+                setTargetPos(Robot.backLeft, -encDist);
+                setTargetPos(Robot.backRight, -encDist);
+                break;
+            case "left":
+                setTargetPos(Robot.frontLeft, -encDist * sideBias);
+                setTargetPos(Robot.frontRight, encDist * sideBias);
+                setTargetPos(Robot.backLeft, encDist * sideBias);
+                setTargetPos(Robot.backRight, -encDist * sideBias);
+                break;
+            case "right":
+                setTargetPos(Robot.frontLeft, encDist * sideBias);
+                setTargetPos(Robot.frontRight, -encDist * sideBias);
+                setTargetPos(Robot.backLeft, -encDist * sideBias);
+                setTargetPos(Robot.backRight, encDist * sideBias);
+                break;
+            default:
+                opMode.telemetry.addData("failure", "invalid input");
+                opMode.telemetry.update();
+                break;
+        }
+        while ((Robot.frontRight.isBusy() && Robot.frontLeft.isBusy() && Robot.backRight.isBusy() && Robot.backLeft.isBusy()) && opMode.opModeIsActive()) {
+            setPowers(Robot, speed);
+        }
+    }
+
     public void moveRampToPosition(String direction, double maxSpeed, double distance, Hardware Robot, LinearOpMode opMode, ElapsedTime time) {
         // this function moves the specified number of inches in the given direction using acceleration ramps along with the built-in PIDs
         double encDist = distance / INCHES_PER_ENCODER_TICK; // calculate distance in encoder counts
+        double minSpeed = .3;
 
         Robot.frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER); // reset all encoders
         Robot.frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -519,7 +563,7 @@ public class Hardware {
                 rampUpSpeed = maxSpeed;
             }
             // calculate rampdown, remaining distance / 10, no less than min var
-            rampDownSpeed = Math.max(Math.abs(Math.abs(Robot.frontRight.getCurrentPosition() * INCHES_PER_ENCODER_TICK) - distance) * 1 / 10, minSpeed);
+            rampDownSpeed = Math.max(Math.abs(Math.abs(Robot.frontRight.getCurrentPosition() * INCHES_PER_ENCODER_TICK) - distance) * 1 / 5, minSpeed);
             // lock ramp down at min var
             if (rampDownLock) {
                 rampDownSpeed = minSpeed;
