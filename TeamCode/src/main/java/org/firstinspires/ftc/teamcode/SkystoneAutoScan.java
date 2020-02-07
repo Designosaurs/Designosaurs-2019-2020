@@ -140,8 +140,6 @@ public class SkystoneAutoScan extends LinearOpMode {
             }
         }
         secondTimeAround = true;
-        imu.correctHeading(turnToFaceStones, robot, this);
-        robot.brake();
         waitForYellow();
     }
 
@@ -268,6 +266,7 @@ public class SkystoneAutoScan extends LinearOpMode {
         robot.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         imu.turnAndCorrect(turnToFaceStones, robot, this);
         robot.brake();
+        sleep(200);
         imu.correctHeading(turnToFaceStones, robot, this);
         robot.brake();
         //waitForYellow();
@@ -281,7 +280,7 @@ public class SkystoneAutoScan extends LinearOpMode {
             sleep(100000);
         }
         robot.brake();
-        robot.moveRampToPosition("backward", 0.05, 1.5, robot, this, time);
+        robot.moveRampToPosition("backward", 0.05, 1.0, robot, this, time);
         robot.brake();
 
 
@@ -289,6 +288,8 @@ public class SkystoneAutoScan extends LinearOpMode {
         robot.brake();
 
         driveByGrab();
+        imu.correctHeading(slightlyIn, robot, this);
+        robot.brake();
 
         waitForYellow();
 
@@ -299,11 +300,11 @@ public class SkystoneAutoScan extends LinearOpMode {
         if (teamColorBlue) {
             // If we're BLUE:
             if (targetStoneNumber == 1) {
-                distanceToGo = 31;
+                distanceToGo = 34;
             } else if (targetStoneNumber == 2) {
-                distanceToGo = 38;
+                distanceToGo = 41;
             } else {
-                distanceToGo = 45;
+                distanceToGo = 49;
             }
         } else {
             // If we're RED:
@@ -336,9 +337,9 @@ public class SkystoneAutoScan extends LinearOpMode {
 
         if (truncateAfterOne) {
             if (teamColorBlue) {
-                robot.moveRampToPosition(outside, .5, 16, robot, this, time);
+                robot.moveRampToPosition(outside, .5, 19, robot, this, time);
             } else {
-                robot.moveRampToPosition(outside, .5, 16, robot, this, time);
+                robot.moveRampToPosition(outside, .5, 19, robot, this, time);
             }
         }
 
